@@ -114,7 +114,7 @@
   /* FUNCTION KEY BAR */
   .fnkeys {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     border-bottom: 1px solid var(--line);
     background: var(--bg-1);
   }
@@ -218,7 +218,7 @@
   /* STAT STRIP */
   .stat-strip {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     border-bottom: 1px solid var(--line);
     border-top: 1px solid var(--line);
   }
@@ -634,14 +634,35 @@
   .versions a:hover:not(.active) { color: var(--amber); background: transparent; }
 
   @media (max-width: 900px) {
-    .grid-2, .stat-strip, .skl-grid, .contact-grid { grid-template-columns: 1fr; }
+    .grid-2, .skl-grid, .contact-grid { grid-template-columns: 1fr; }
+    .stat-strip { grid-template-columns: 1fr 1fr; }
     .grid-2 > .panel + .panel { border-left: 0; border-top: 1px solid var(--line); }
-    .stat-strip .cell, .skl-cat { border-right: 0; border-bottom: 1px solid var(--line); }
+    .stat-strip .cell { border-bottom: 1px solid var(--line); }
+    .stat-strip .cell:nth-child(2n) { border-right: 0; }
+    .skl-cat { border-right: 0; border-bottom: 1px solid var(--line); }
     .ident-main { grid-template-columns: 1fr; }
     .ident-quote { text-align: left; }
-    .fnkeys { grid-template-columns: repeat(4, 1fr); }
-    .fnkey { font-size: 10px; padding: 6px 6px; gap: 4px; }
+    .fnkeys { grid-template-columns: repeat(3, 1fr); }
+    .fnkey { font-size: 10px; padding: 8px 6px; gap: 4px; }
     .versions { display: none; }
+    .ident-bar .right { flex-wrap: wrap; gap: 6px 10px; justify-content: flex-end; font-size: 10px; }
+    .watchlist thead th.col-cat,
+    .watchlist thead th.col-users,
+    .watchlist thead th.col-scale,
+    .watchlist thead th.col-year,
+    .watchlist tbody td.col-cat,
+    .watchlist tbody td.col-users,
+    .watchlist tbody td.col-scale,
+    .watchlist tbody td.col-year { display: none; }
+    .watchlist tbody td.tic { font-size: 13px; }
+    .stat-strip .cell .val { font-size: 20px; }
+    .ident-name { font-size: clamp(32px, 9vw, 48px); }
+    .contact-grid .actions { flex-direction: column; }
+    .contact-grid .btn { width: 100%; text-align: center; }
+    .contact-grid > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    .contact-grid .line { grid-template-columns: 90px 1fr; }
+    .cmdline .help { display: none; }
+    .topbar .cmd { font-size: 10px; }
   }
 </style>
 </head>
@@ -763,10 +784,10 @@
         <tr>
           <th>#</th>
           <th>TICKER / PROJECT</th>
-          <th>CATEGORY</th>
-          <th class="r">USERS</th>
-          <th class="r">SCALE</th>
-          <th class="r">YEAR</th>
+          <th class="col-cat">CATEGORY</th>
+          <th class="r col-users">USERS</th>
+          <th class="r col-scale">SCALE</th>
+          <th class="r col-year">YEAR</th>
           <th class="r">STATUS</th>
         </tr>
       </thead>
@@ -774,37 +795,37 @@
         <tr data-row="01">
           <td class="idx">01</td>
           <td class="tic">ACNT.ASST <span class="star">★</span><div class="stack">Accenture Accounting Assistant</div></td>
-          <td>ENTERPRISE AI</td>
-          <td class="r">60+ ldrs</td>
-          <td class="r">Fortune 500</td>
-          <td class="r">2025</td>
+          <td class="col-cat">ENTERPRISE AI</td>
+          <td class="r col-users">60+ ldrs</td>
+          <td class="r col-scale">Fortune 500</td>
+          <td class="r col-year">2025</td>
           <td class="r"><span class="arrow">▲ FEATURED</span></td>
         </tr>
         <tr data-row="02">
           <td class="idx">02</td>
           <td class="tic">990.ANLZ<div class="stack">990 Nonprofit Financial Analyzer</div></td>
-          <td>DATA PLATFORM</td>
-          <td class="r">728K orgs</td>
-          <td class="r">15.4B assets</td>
-          <td class="r">2025</td>
+          <td class="col-cat">DATA PLATFORM</td>
+          <td class="r col-users">728K orgs</td>
+          <td class="r col-scale">15.4B assets</td>
+          <td class="r col-year">2025</td>
           <td class="r"><span class="arrow">▲ ACTIVE</span></td>
         </tr>
         <tr data-row="03">
           <td class="idx">03</td>
           <td class="tic">CFG.LOAD<div class="stack">Configuration Load Tool</div></td>
-          <td>CONFIG / AUTOMATION</td>
-          <td class="r">1,420 rows</td>
-          <td class="r">e2e pipeline</td>
-          <td class="r">2025</td>
+          <td class="col-cat">CONFIG / AUTOMATION</td>
+          <td class="r col-users">1,420 rows</td>
+          <td class="r col-scale">e2e pipeline</td>
+          <td class="r col-year">2025</td>
           <td class="r"><span class="arrow">▲ ACTIVE</span></td>
         </tr>
         <tr data-row="04">
           <td class="idx">04</td>
           <td class="tic">DIVI.IOS<div class="stack">Divi — Bill Splitter iOS App</div></td>
-          <td>MOBILE / CONSUMER</td>
-          <td class="r">GPT-4o OCR</td>
-          <td class="r">&lt;60s split</td>
-          <td class="r">2025</td>
+          <td class="col-cat">MOBILE / CONSUMER</td>
+          <td class="r col-users">GPT-4o OCR</td>
+          <td class="r col-scale">&lt;60s split</td>
+          <td class="r col-year">2025</td>
           <td class="r"><span class="arrow">▲ TESTFLIGHT</span></td>
         </tr>
       </tbody>
