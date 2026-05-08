@@ -1,0 +1,1236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>JPJ &lt;EQUITY&gt; — Jacobello, JP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000000;
+    --bg-1: #050505;
+    --panel: #0a0a0a;
+    --line: #1f1f1f;
+    --line-2: #2a2a2a;
+    --amber: #ffa31a;
+    --amber-2: #ffc266;
+    --amber-dim: #b06d00;
+    --orange-bar: #ff6b00;
+    --white: #f0f0f0;
+    --gray: #6e6e6e;
+    --gray-2: #404040;
+    --green: #2eea76;
+    --green-dim: #1a8a45;
+    --red: #ff4444;
+    --cyan: #56d4ff;
+    --blue: #2b6fff;
+    --blue-bar: #1a3a8a;
+    --magenta: #ff52e4;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "IBM Plex Mono", ui-monospace, "Menlo", monospace;
+    background: var(--bg);
+    color: var(--amber);
+    font-size: 12px;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    font-feature-settings: "ss01";
+  }
+  ::selection { background: var(--amber); color: #000; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-2); }
+  a { color: var(--cyan); text-decoration: none; }
+  a:hover { background: var(--cyan); color: #000; }
+
+  /* Subtle scanline effect — very faint */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image: repeating-linear-gradient(
+      0deg,
+      rgba(255, 163, 26, 0.012) 0,
+      rgba(255, 163, 26, 0.012) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* CRT vignette */
+  body::after {
+    content: "";
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%);
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .screen {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0;
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    min-height: 100vh;
+  }
+
+  /* TOP STATUS BAR */
+  .topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    padding: 6px 12px;
+    background: #000;
+    border-bottom: 1px solid var(--line);
+    font-size: 11px;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    min-width: 0;
+  }
+  .topbar > * { min-width: 0; flex-shrink: 0; }
+  .topbar .clock { flex: 0 0 auto; }
+  .topbar .indic { flex: 1 1 auto; text-align: right; }
+  .topbar .cmd { flex: 0 0 auto; white-space: nowrap; }
+  @media (max-width: 700px) {
+    .topbar .indic { text-align: left; flex-basis: 100%; }
+  }
+  .topbar .clock { color: var(--amber); }
+  .topbar .clock .sep { color: var(--gray); margin: 0 4px; }
+  .topbar .indic { color: var(--green); }
+  .topbar .indic.dot::before { content: "●"; color: var(--green); margin-right: 4px; animation: pulse 2s infinite; }
+  @keyframes pulse { 50% { opacity: 0.4; } }
+  .topbar .cmd { color: var(--white); font-weight: 600; }
+  .topbar .cmd b { color: var(--amber); }
+
+  /* FUNCTION KEY BAR */
+  .fnkeys {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-1);
+  }
+  .fnkey {
+    padding: 7px 10px;
+    border-right: 1px solid var(--line);
+    font-size: 11px;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: background 0.1s, color 0.1s;
+    user-select: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .fnkey:last-child { border-right: 0; }
+  .fnkey .k {
+    background: var(--amber);
+    color: #000;
+    padding: 1px 5px;
+    font-weight: 700;
+    font-size: 10px;
+  }
+  .fnkey:hover { background: rgba(255,163,26,0.08); color: var(--white); }
+  .fnkey.active { background: var(--amber); color: #000; }
+  .fnkey.active .k { background: #000; color: var(--amber); }
+
+  /* HEADER (the "security identifier" panel) */
+  .ident {
+    border-bottom: 1px solid var(--line);
+    padding: 0;
+  }
+  .ident-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px;
+    background: linear-gradient(90deg, var(--orange-bar) 0%, #c75300 100%);
+    color: #000;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .ident-bar .right { display: flex; gap: 14px; align-items: center; }
+  .ident-bar .right span { font-weight: 500; }
+
+  .ident-main {
+    padding: 36px 16px 32px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+  }
+  .ident-name {
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 600;
+    color: var(--amber);
+    letter-spacing: 0.02em;
+    line-height: 0.95;
+  }
+  .ident-name .equity {
+    font-size: 14px;
+    color: var(--white);
+    background: var(--blue-bar);
+    padding: 3px 8px;
+    margin-left: 12px;
+    vertical-align: 6px;
+    letter-spacing: 0.08em;
+  }
+  .ident-sub {
+    color: var(--white);
+    margin-top: 6px;
+    font-size: 13px;
+  }
+  .ident-sub .pipe { color: var(--gray); margin: 0 8px; }
+  .ident-sub strong { color: var(--amber); font-weight: 500; }
+
+  .ident-quote {
+    text-align: right;
+    font-family: "IBM Plex Mono", monospace;
+  }
+  .quote-big {
+    font-size: 36px;
+    color: var(--green);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.01em;
+  }
+  .quote-delta {
+    color: var(--green);
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .quote-label {
+    color: var(--gray);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+
+  /* STAT STRIP */
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    border-bottom: 1px solid var(--line);
+    border-top: 1px solid var(--line);
+  }
+  .stat-strip .cell {
+    padding: 10px 12px;
+    border-right: 1px solid var(--line);
+  }
+  .stat-strip .cell:last-child { border-right: 0; }
+  .stat-strip .cell .lbl {
+    color: var(--gray);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .stat-strip .cell .val {
+    color: var(--white);
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .stat-strip .cell .val.amber { color: var(--amber); }
+  .stat-strip .cell .val.green { color: var(--green); }
+  .stat-strip .cell .delta {
+    font-size: 10px;
+    color: var(--green);
+    margin-left: 4px;
+    font-weight: 400;
+  }
+
+  /* GRID LAYOUT FOR MAIN SECTIONS */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    border-bottom: 1px solid var(--line);
+  }
+  .grid-2 > .panel + .panel { border-left: 1px solid var(--line); }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+  }
+  .panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 10px;
+    background: var(--blue-bar);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--line);
+  }
+  .panel-head .id {
+    background: var(--amber);
+    color: #000;
+    padding: 1px 6px;
+    font-size: 10px;
+    margin-right: 8px;
+  }
+  .panel-head .right {
+    color: var(--amber-2);
+    font-size: 10px;
+    font-weight: 400;
+  }
+  .panel-body {
+    padding: 12px;
+    flex: 1;
+  }
+
+  /* DESCRIPTION (about) panel */
+  .desc-text {
+    color: var(--white);
+    font-size: 12px;
+    line-height: 1.65;
+    margin: 0 0 10px;
+  }
+  .desc-text strong { color: var(--amber); font-weight: 500; }
+  .desc-text .hi { color: var(--green); }
+  .desc-text .pin { color: var(--cyan); }
+
+  .kv-table {
+    border-top: 1px dashed var(--line-2);
+    margin-top: 12px;
+    padding-top: 10px;
+    width: 100%;
+  }
+  .kv-row {
+    display: flex; justify-content: space-between;
+    padding: 3px 0;
+    font-size: 11px;
+  }
+  .kv-row .k { color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; font-size: 10px; }
+  .kv-row .v { color: var(--white); }
+  .kv-row .v.amber { color: var(--amber); }
+
+  /* WATCHLIST (projects) */
+  .watchlist {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+  .watchlist thead th {
+    text-align: left;
+    padding: 6px 10px;
+    background: var(--bg-1);
+    color: var(--gray);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .watchlist thead th.r { text-align: right; }
+  .watchlist tbody tr {
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .watchlist tbody tr:hover { background: rgba(255,163,26,0.06); }
+  .watchlist tbody tr.expanded { background: rgba(255,163,26,0.04); }
+  .watchlist tbody td {
+    padding: 8px 10px;
+    color: var(--white);
+    vertical-align: top;
+  }
+  .watchlist tbody td.idx { color: var(--gray); width: 24px; }
+  .watchlist tbody td.tic { color: var(--amber); font-weight: 600; }
+  .watchlist tbody td.r { text-align: right; }
+  .watchlist tbody td .arrow { color: var(--green); }
+  .watchlist tbody td .arrow.dn { color: var(--red); }
+  .watchlist tbody td .stack { font-size: 10px; color: var(--gray); margin-top: 3px; }
+  .watchlist .star { color: var(--amber); }
+
+  .expand-row td {
+    padding: 12px 14px 16px !important;
+    background: #060606;
+    border-top: 1px solid var(--line);
+  }
+  .expand-row .desc {
+    color: var(--white);
+    font-size: 11px;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .expand-row .desc strong { color: var(--amber); }
+  .expand-row .features {
+    list-style: none; padding: 0; margin: 0 0 10px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px;
+  }
+  .expand-row .features li {
+    font-size: 11px; color: var(--white);
+    padding-left: 14px; position: relative;
+    line-height: 1.5;
+  }
+  .expand-row .features li::before {
+    content: "▸"; color: var(--green);
+    position: absolute; left: 0;
+  }
+  .expand-row .stack-row {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    margin-top: 8px;
+  }
+  .expand-row .pill {
+    font-size: 10px;
+    padding: 2px 8px;
+    border: 1px solid var(--gray-2);
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* WIRE / NEWS FEED */
+  .wire {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+  .wire tbody tr { border-bottom: 1px dashed var(--line-2); }
+  .wire tbody tr:last-child { border-bottom: 0; }
+  .wire .sub { display: none; }
+  .wire .head.expanded + .sub { display: table-row; }
+  .wire .head { cursor: pointer; }
+  .wire .head:hover td { background: rgba(255,163,26,0.04); }
+  .wire .head.always-on + .sub { display: table-row; }
+  .wire .head td.expand-ind::before {
+    content: "+";
+    color: var(--gray);
+    margin-right: 6px;
+    font-weight: 600;
+  }
+  .wire .head.expanded td.expand-ind::before, .wire .head.always-on td.expand-ind::before { content: "−"; color: var(--amber); }
+  .wire tbody td { padding: 9px 10px; vertical-align: top; }
+  .wire .time { color: var(--gray); font-size: 10px; width: 110px; white-space: nowrap; }
+  .wire .badge {
+    display: inline-block;
+    padding: 1px 6px;
+    background: var(--amber);
+    color: #000;
+    font-weight: 600;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    width: 78px;
+    text-align: center;
+  }
+  .wire .badge.cur { background: var(--green); }
+  .wire .badge.pro { background: var(--cyan); }
+  .wire .badge.hir { background: var(--white); }
+  .wire .badge.int { background: var(--gray); color: #000; }
+  .wire .head td { padding-bottom: 2px; }
+  .wire .role { color: var(--white); font-weight: 500; }
+  .wire .co { color: var(--amber); }
+  .wire .at { color: var(--gray); }
+  .wire .sub td { padding-top: 0 !important; padding-left: 130px !important; }
+  .wire .sub ul { list-style: none; padding: 0; margin: 4px 0 0; }
+  .wire .sub li {
+    color: var(--gray); font-size: 11px;
+    padding-left: 12px; position: relative; line-height: 1.55;
+    padding-bottom: 2px;
+  }
+  .wire .sub li::before {
+    content: "·"; color: var(--gray-2);
+    position: absolute; left: 0;
+  }
+  .wire .sub li strong { color: var(--white); font-weight: 500; }
+
+  /* SKILLS HEATMAP */
+  .skl-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+  }
+  .skl-cat {
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 12px;
+  }
+  .skl-cat:nth-child(2n) { border-right: 0; }
+  .skl-cat-head {
+    color: var(--amber);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+    display: flex; justify-content: space-between;
+  }
+  .skl-cat-head .ct { color: var(--gray); }
+  .skl-list { display: flex; flex-direction: column; gap: 3px; }
+  .skl-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+    font-size: 11px;
+    padding: 2px 0;
+  }
+  .skl-row .name { color: var(--white); }
+  .skl-row .bar {
+    width: 80px; height: 8px;
+    background: #1a1a1a;
+    position: relative;
+  }
+  .skl-row .bar .fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: var(--amber);
+  }
+  .skl-row .bar.lvl-5 .fill { width: 100%; background: var(--green); }
+  .skl-row .bar.lvl-4 .fill { width: 80%; background: var(--amber); }
+  .skl-row .bar.lvl-3 .fill { width: 60%; background: var(--amber-dim); }
+  .skl-row .bar.lvl-2 .fill { width: 40%; background: var(--cyan); }
+  .skl-row .lbl {
+    color: var(--gray); font-size: 10px;
+    text-align: right;
+    min-width: 28px;
+  }
+
+  /* CONTACT panel */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--line);
+  }
+  .contact-grid > div { padding: 14px 12px; }
+  .contact-grid > div:first-child { border-right: 1px solid var(--line); }
+  .contact-grid h3 {
+    margin: 0 0 10px;
+    color: var(--amber);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .contact-grid .line {
+    display: grid; grid-template-columns: 110px 1fr;
+    gap: 8px;
+    font-size: 12px;
+    padding: 4px 0;
+  }
+  .contact-grid .line .k { color: var(--gray); text-transform: uppercase; font-size: 10px; letter-spacing: 0.06em; padding-top: 2px; }
+  .contact-grid .line .v { color: var(--white); }
+  .contact-grid .actions {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 12px;
+  }
+  .contact-grid .btn {
+    border: 1px solid var(--amber);
+    color: var(--amber);
+    background: transparent;
+    padding: 6px 12px;
+    font-family: inherit;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .contact-grid .btn:hover { background: var(--amber); color: #000; }
+  .contact-grid .btn.green { border-color: var(--green); color: var(--green); }
+  .contact-grid .btn.green:hover { background: var(--green); color: #000; }
+
+  /* COMMAND LINE */
+  .cmdline {
+    border-top: 1px solid var(--line);
+    background: #000;
+    padding: 8px 12px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px;
+    position: sticky; bottom: 0; z-index: 50;
+  }
+  .cmdline .prompt { color: var(--green); }
+  .cmdline input {
+    flex: 1;
+    background: transparent; border: 0; outline: 0;
+    color: var(--amber); font-family: inherit; font-size: 12px;
+  }
+  .cmdline .blink {
+    display: inline-block; width: 8px; height: 14px;
+    background: var(--amber);
+    animation: blink 1s step-end infinite;
+    vertical-align: -2px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .cmdline .help { color: var(--gray); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .cmdline .help b { color: var(--amber); background: #000; }
+
+  /* TICKER */
+  .ticker {
+    border-top: 1px solid var(--line);
+    background: #000;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 6px 0;
+    font-size: 11px;
+    position: relative;
+  }
+  .ticker-track {
+    display: inline-block;
+    animation: tickslide 80s linear infinite;
+    padding-left: 100%;
+  }
+  .ticker-track:hover { animation-play-state: paused; }
+  @keyframes tickslide {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+  }
+  .ticker .tk { color: var(--white); margin-right: 24px; }
+  .ticker .tk .sym { color: var(--amber); margin-right: 6px; }
+  .ticker .tk .up { color: var(--green); }
+  .ticker .tk .dn { color: var(--red); }
+
+  /* Section anchors should not jump (we manually scroll) */
+  section { scroll-margin-top: 0; }
+
+  /* Section heading bar (non-panel context) */
+  .sec-bar {
+    background: var(--blue-bar);
+    color: var(--white);
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--line);
+    border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .sec-bar .id { background: var(--amber); color: #000; padding: 1px 6px; font-size: 10px; margin-right: 8px; }
+  .sec-bar .right { color: var(--amber-2); font-weight: 400; font-size: 10px; }
+
+  /* Banner switcher */
+  .versions {
+    position: fixed;
+    bottom: 56px; left: 10px;
+    z-index: 60;
+    display: flex; gap: 0;
+    border: 1px solid var(--line);
+    background: #000;
+  }
+  @media (max-width: 1500px) {
+    .versions { display: none; }
+  }
+  .versions a {
+    padding: 6px 10px;
+    font-size: 10px;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--line);
+  }
+  .versions a:last-child { border-right: 0; border-bottom: 0; }
+  .versions a { border-right: 1px solid var(--line); border-bottom: 0; }
+  .versions a.active { background: var(--amber); color: #000; }
+  .versions a:hover:not(.active) { color: var(--amber); background: transparent; }
+
+  @media (max-width: 900px) {
+    .grid-2, .stat-strip, .skl-grid, .contact-grid { grid-template-columns: 1fr; }
+    .grid-2 > .panel + .panel { border-left: 0; border-top: 1px solid var(--line); }
+    .stat-strip .cell, .skl-cat { border-right: 0; border-bottom: 1px solid var(--line); }
+    .ident-main { grid-template-columns: 1fr; }
+    .ident-quote { text-align: left; }
+    .fnkeys { grid-template-columns: repeat(4, 1fr); }
+    .fnkey { font-size: 10px; padding: 6px 6px; gap: 4px; }
+    .versions { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<aside class="versions">
+  <a href="portfolio.html">v1 · CARD</a>
+  <a href="terminal.html" class="active">v2 · TERM</a>
+</aside>
+
+<div class="screen">
+
+  <!-- TOP STATUS BAR -->
+  <header class="topbar">
+    <div class="clock">
+      <span id="clk-time">14:32:18</span>
+      <span class="sep">·</span>
+      <span id="clk-date">FRI 08 MAY 2026</span>
+      <span class="sep">·</span>
+      <span>EST</span>
+    </div>
+    <div class="indic dot">SESSION ACTIVE</div>
+    <div class="cmd"><b>JPJ</b> &lt;EQUITY&gt; <b>GO</b></div>
+  </header>
+
+  <!-- FUNCTION KEYS -->
+  <nav class="fnkeys">
+    <div class="fnkey active" data-tgt="ident"><span class="k">F1</span> HDR</div>
+    <div class="fnkey" data-tgt="desc"><span class="k">F2</span> DES</div>
+    <div class="fnkey" data-tgt="work"><span class="k">F3</span> WORK</div>
+    <div class="fnkey" data-tgt="exp"><span class="k">F4</span> EXP</div>
+    <div class="fnkey" data-tgt="skills"><span class="k">F5</span> SKLS</div>
+    <div class="fnkey" data-tgt="contact"><span class="k">F6</span> CTC</div>
+  </nav>
+
+  <!-- IDENT / HEADER -->
+  <section id="ident" class="ident" data-screen-label="01 Header">
+    <div class="ident-bar">
+      <div>JACOBELLO, JP &lt;EQUITY&gt; · PRIMARY LISTING</div>
+      <div class="right">
+        <span>PAGE 1/12</span>
+        <span>·</span>
+        <span>CCY: USD</span>
+        <span>·</span>
+        <span class="indic" style="color:#000;font-weight:700;">▲ AVAIL</span>
+      </div>
+    </div>
+    <div class="ident-main">
+      <div>
+        <div class="ident-name">JACOBELLO, JP<span class="equity">EQTY</span></div>
+        <div class="ident-sub">
+          <strong>Sr Analyst</strong>
+          <span class="pipe">|</span>
+          Accenture · Technology
+          <span class="pipe">|</span>
+          New York, NY
+          <span class="pipe">|</span>
+          AI &amp; Enterprise Finance
+        </div>
+      </div>
+      <div class="ident-quote">
+        <div class="quote-label">AVAIL · Q3 2026</div>
+        <div class="quote-big">OPEN</div>
+        <div class="quote-delta">▲ +5 ROLES IN PIPELINE</div>
+      </div>
+    </div>
+
+    <div class="stat-strip">
+      <div class="cell">
+        <div class="lbl">YEARS</div>
+        <div class="val amber">3.5</div>
+      </div>
+      <div class="cell">
+        <div class="lbl">USERS SERVED</div>
+        <div class="val">1,200<span class="delta">+</span></div>
+      </div>
+      <div class="cell">
+        <div class="lbl">PROJECTS SHIPPED</div>
+        <div class="val">5</div>
+      </div>
+      <div class="cell">
+        <div class="lbl">DEFECTS RESOLVED</div>
+        <div class="val">300<span class="delta">+</span></div>
+      </div>
+      <div class="cell">
+        <div class="lbl">AWARDS</div>
+        <div class="val green">WOW · TOP 1%</div>
+      </div>
+      <div class="cell">
+        <div class="lbl">CLIENTS</div>
+        <div class="val">F500</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="desc" data-screen-label="02 Description">
+    <div class="sec-bar">
+      <div><span class="id">DES</span>DESCRIPTION</div>
+      <div class="right"></div>
+    </div>
+    <div style="padding:24px 18px 22px;max-width:880px;">
+      <p class="desc-text" style="font-size:14px;line-height:1.7;">
+        <strong>Technology Sr. Analyst at Accenture</strong> with 3+ years building enterprise systems for Fortune 500 clients. I work at the intersection of <span class="hi">AI and enterprise finance</span> — using Claude AI and live Workday APIs to ship tools that non-technical users can actually run.
+      </p>
+      <p class="desc-text" style="font-size:14px;line-height:1.7;color:var(--gray);">
+        Most useful where business stakeholders meet engineering teams — turning ambiguous finance, HR, and procurement requirements into <span class="pin">shipped tools</span>, not slide-deck recommendations.
+      </p>
+    </div>
+  </section>
+
+  <!-- WORK / WATCHLIST -->
+  <section id="work" data-screen-label="03 Work">
+    <div class="sec-bar">
+      <div><span class="id">WLST</span>SELECTED WORK · WATCHLIST · 4 ACTIVE</div>
+      <div class="right">SORT: FEATURED ▼ &nbsp; FILTER: ALL</div>
+    </div>
+    <table class="watchlist">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>TICKER / PROJECT</th>
+          <th>CATEGORY</th>
+          <th class="r">USERS</th>
+          <th class="r">SCALE</th>
+          <th class="r">YEAR</th>
+          <th class="r">STATUS</th>
+        </tr>
+      </thead>
+      <tbody id="wl-body">
+        <tr data-row="01">
+          <td class="idx">01</td>
+          <td class="tic">ACNT.ASST <span class="star">★</span><div class="stack">Accenture Accounting Assistant</div></td>
+          <td>ENTERPRISE AI</td>
+          <td class="r">60+ ldrs</td>
+          <td class="r">Fortune 500</td>
+          <td class="r">2025</td>
+          <td class="r"><span class="arrow">▲ FEATURED</span></td>
+        </tr>
+        <tr data-row="02">
+          <td class="idx">02</td>
+          <td class="tic">990.ANLZ<div class="stack">990 Nonprofit Financial Analyzer</div></td>
+          <td>DATA PLATFORM</td>
+          <td class="r">728K orgs</td>
+          <td class="r">15.4B assets</td>
+          <td class="r">2025</td>
+          <td class="r"><span class="arrow">▲ ACTIVE</span></td>
+        </tr>
+        <tr data-row="03">
+          <td class="idx">03</td>
+          <td class="tic">CFG.LOAD<div class="stack">Configuration Load Tool</div></td>
+          <td>CONFIG / AUTOMATION</td>
+          <td class="r">1,420 rows</td>
+          <td class="r">e2e pipeline</td>
+          <td class="r">2025</td>
+          <td class="r"><span class="arrow">▲ ACTIVE</span></td>
+        </tr>
+        <tr data-row="04">
+          <td class="idx">04</td>
+          <td class="tic">DIVI.IOS<div class="stack">Divi — Bill Splitter iOS App</div></td>
+          <td>MOBILE / CONSUMER</td>
+          <td class="r">GPT-4o OCR</td>
+          <td class="r">&lt;60s split</td>
+          <td class="r">2025</td>
+          <td class="r"><span class="arrow">▲ TESTFLIGHT</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- EXPERIENCE / WIRE -->
+  <section id="exp" data-screen-label="04 Experience">
+    <div class="sec-bar">
+      <div><span class="id">WIRE</span>EMPLOYMENT WIRE · CHRONOLOGICAL</div>
+      <div class="right">5 EVENTS · 2019 — PRESENT</div>
+    </div>
+    <table class="wire">
+      <tbody>
+        <tr class="head always-on">
+          <td class="time">2024-12 → NOW</td>
+          <td><span class="badge cur">CURRENT</span></td>
+          <td class="expand-ind">
+            <div><span class="role">TECHNOLOGY SR. ANALYST</span> <span class="at">@</span> <span class="co">ACCENTURE</span> · NEW YORK, NY</div>
+          </td>
+        </tr>
+        <tr class="sub"><td colspan="3">
+          <ul>
+            <li>Designed and deployed enterprise-scale financial and procurement systems for Fortune 500 clients, automating reporting and routing workflows for <strong>1,200+ users</strong>.</li>
+            <li>Built AI-powered analytics applications using LLMs and APIs, enabling non-technical users to query financial data through a natural-language chatbot.</li>
+            <li>Presented AI prototype to <strong>60+ senior leaders</strong> as a potential client-facing offering.</li>
+            <li>Served as primary liaison to C-suite stakeholders, leading weekly status reviews.</li>
+          </ul>
+        </td></tr>
+
+        <tr class="head">
+          <td class="time">2022-09 → 2024-12</td>
+          <td><span class="badge pro">PROMOTED</span></td>
+          <td class="expand-ind">
+            <div><span class="role">TECHNOLOGY ANALYST</span> <span class="at">@</span> <span class="co">ACCENTURE</span> · NEW YORK, NY</div>
+          </td>
+        </tr>
+        <tr class="sub"><td colspan="3">
+          <ul>
+            <li>Recognized with <strong>Accenture WOW Award (top 1%)</strong> for innovation and cross-team collaboration.</li>
+            <li>Supported on-site Workday launch and change management for a public healthcare organization.</li>
+            <li>Led Projects and Budgets workstreams for a large enterprise insurance client.</li>
+            <li>Solutioned <strong>300+ defects</strong> in a single implementation, improving stability and stakeholder trust.</li>
+          </ul>
+        </td></tr>
+
+        <tr class="head">
+          <td class="time">2021-07</td>
+          <td><span class="badge int">INTERN</span></td>
+          <td class="expand-ind">
+            <div><span class="role">DATA ANALYST INTERN</span> <span class="at">@</span> <span class="co">KESWICK VINEYARDS</span> · KESWICK, VA</div>
+          </td>
+        </tr>
+        <tr class="sub"><td colspan="3">
+          <ul>
+            <li>Analyzed survey data from <strong>1,000+ wine-club members</strong> to develop a new business model.</li>
+            <li>Implemented strategy targeting a younger demographic, increasing margins by <strong>30%</strong>.</li>
+          </ul>
+        </td></tr>
+
+        <tr class="head">
+          <td class="time">2020-07 → 08</td>
+          <td><span class="badge int">INTERN</span></td>
+          <td class="expand-ind">
+            <div><span class="role">CLIENT SERVICE ADMIN INTERN</span> <span class="at">@</span> <span class="co">EHRENKRANZ PARTNERS</span> · NEW YORK, NY</div>
+          </td>
+        </tr>
+        <tr class="sub"><td colspan="3">
+          <ul>
+            <li>Generated reports on Excel using pivot tables to analyze datasets of <strong>4,000+ rows</strong>.</li>
+          </ul>
+        </td></tr>
+
+        <tr class="head">
+          <td class="time">2019-07</td>
+          <td><span class="badge int">INTERN</span></td>
+          <td class="expand-ind">
+            <div><span class="role">INTERN</span> <span class="at">@</span> <span class="co">VENDEFY LLC</span> · NEW YORK, NY</div>
+          </td>
+        </tr>
+        <tr class="sub"><td colspan="3">
+          <ul>
+            <li>Coordinated launch of beta test with 50 users for the company's e-commerce application.</li>
+          </ul>
+        </td></tr>
+
+        <tr class="head">
+          <td class="time">2019-08 → 2022-05</td>
+          <td><span class="badge hir">EDU</span></td>
+          <td class="expand-ind">
+            <div><span class="role">B.A. INTERDISCIPLINARY STATISTICS</span> <span class="at">@</span> <span class="co">UNIVERSITY OF VIRGINIA</span> · CHARLOTTESVILLE, VA</div>
+          </td>
+        </tr>
+        <tr class="sub"><td colspan="3">
+          <ul>
+            <li>Econometrics Concentration · Sales &amp; Trading Group · Coursework: Data Analysis with Python, Applied Calculus II.</li>
+          </ul>
+        </td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" data-screen-label="05 Skills">
+    <div class="sec-bar">
+      <div><span class="id">SKLS</span>CAPABILITIES MATRIX · SELF-RATED PROFICIENCY</div>
+      <div class="right">5 = EXPERT  ·  3 = WORKING  ·  2 = FAMILIAR</div>
+    </div>
+    <div class="skl-grid">
+      <div class="skl-cat">
+        <div class="skl-cat-head"><span>// 01 · AI &amp; AUTOMATION</span><span class="ct">06</span></div>
+        <div class="skl-list">
+          <div class="skl-row"><span class="name">Claude Code</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
+          <div class="skl-row"><span class="name">Claude AI (API)</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
+          <div class="skl-row"><span class="name">Prompt Engineering</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
+          <div class="skl-row"><span class="name">Cursor</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
+          <div class="skl-row"><span class="name">Claude Design</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
+          <div class="skl-row"><span class="name">ChatGPT</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
+        </div>
+      </div>
+      <div class="skl-cat">
+        <div class="skl-cat-head"><span>// 02 · ENTERPRISE SYSTEMS</span><span class="ct">05</span></div>
+        <div class="skl-list">
+          <div class="skl-row"><span class="name">Workday Financial Mgmt</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
+          <div class="skl-row"><span class="name">Workday HCM</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
+          <div class="skl-row"><span class="name">Workday Procurement</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
+          <div class="skl-row"><span class="name">SOAP WWS API</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
+          <div class="skl-row"><span class="name">Workday Studio</span><span class="bar lvl-3"><span class="fill"></span></span><span class="lbl">3/5</span></div>
+        </div>
+      </div>
+      <div class="skl-cat">
+        <div class="skl-cat-head"><span>// 03 · DEVELOPMENT</span><span class="ct">07</span></div>
+        <div class="skl-list">
+          <div class="skl-row"><span class="name">Node.js</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
+          <div class="skl-row"><span class="name">JavaScript</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
+          <div class="skl-row"><span class="name">HTML / CSS</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
+          <div class="skl-row"><span class="name">Python</span><span class="bar lvl-3"><span class="fill"></span></span><span class="lbl">3/5</span></div>
+          <div class="skl-row"><span class="name">REST &amp; SOAP APIs</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
+          <div class="skl-row"><span class="name">SQLite</span><span class="bar lvl-3"><span class="fill"></span></span><span class="lbl">3/5</span></div>
+          <div class="skl-row"><span class="name">PowerShell</span><span class="bar lvl-2"><span class="fill"></span></span><span class="lbl">2/5</span></div>
+        </div>
+      </div>
+      <div class="skl-cat">
+        <div class="skl-cat-head"><span>// 04 · DATA &amp; VIZ</span><span class="ct">06</span></div>
+        <div class="skl-list">
+          <div class="skl-row"><span class="name">Chart.js</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
+          <div class="skl-row"><span class="name">pandas</span><span class="bar lvl-3"><span class="fill"></span></span><span class="lbl">3/5</span></div>
+          <div class="skl-row"><span class="name">matplotlib</span><span class="bar lvl-3"><span class="fill"></span></span><span class="lbl">3/5</span></div>
+          <div class="skl-row"><span class="name">Excel · Pivot</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
+          <div class="skl-row"><span class="name">pptxgenjs</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
+          <div class="skl-row"><span class="name">Postman</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" data-screen-label="06 Contact">
+    <div class="sec-bar">
+      <div><span class="id">CTC</span>CONTACT · DIRECT LINES</div>
+      <div class="right">RESPONSE SLA: 24H</div>
+    </div>
+    <div class="contact-grid">
+      <div>
+        <h3>// PRIMARY</h3>
+        <div class="line"><span class="k">EMAIL</span><span class="v"><a href="#" data-mail="jpjacobello+gmail.com" class="email-link">·</a></span></div>
+        <div class="line"><span class="k">PHONE</span><span class="v">908.472.9055</span></div>
+        <div class="line"><span class="k">BASED</span><span class="v">NEW YORK, NY</span></div>
+        <div class="line"><span class="k">TIMEZONE</span><span class="v">EST (UTC-5)</span></div>
+        <div class="actions">
+          <a href="#" data-mail="jpjacobello+gmail.com" class="btn email-link">▶ COMPOSE EMAIL</a>
+          <a href="tel:9084729055" class="btn">▶ CALL</a>
+          <a href="JP Jacobello Resume.pdf" download class="btn green">▶ DOWNLOAD RESUME</a>
+        </div>
+      </div>
+      <div>
+        <h3>// SEEKING</h3>
+        <div class="line"><span class="k">ROLES</span><span class="v">GTM · SOLUTION ENGINEERING · TECH CONSULTING · ENTERPRISE TOOLING</span></div>
+        <div class="line"><span class="k">START</span><span class="v" style="color:var(--green);">Q3 2026 ✓</span></div>
+        <div class="line"><span class="k">MODE</span><span class="v">HYBRID · NYC</span></div>
+        <div class="line"><span class="k">TOPICS</span><span class="v">WORKDAY INTEGRATIONS · CLAUDE PROTOTYPES · AI × FINANCE</span></div>
+        <p class="desc-text" style="margin-top:14px;font-size:11px;color:var(--gray);">
+          Got a system that should be smarter? Open to chat about the intersection of AI and enterprise systems — particularly anywhere humans are doing rote work an LLM could do better.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMAND LINE -->
+  <div class="cmdline">
+    <span class="prompt">JPJ&gt;</span>
+    <input id="cmd" type="text" autocomplete="off" spellcheck="false" placeholder="type a function code (HDR · DES · WORK · EXP · SKLS · CTC)" />
+    <span class="blink"></span>
+    <span class="help">PRESS <b>F1</b>–<b>F6</b></span>
+  </div>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-track" id="ticker">
+      <!-- duplicated content for seamless loop -->
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ===== Clock =====
+  function pad(n) { return n.toString().padStart(2, '0'); }
+  const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function tick() {
+    const d = new Date();
+    document.getElementById('clk-time').textContent =
+      pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    document.getElementById('clk-date').textContent =
+      days[d.getDay()] + ' ' + pad(d.getDate()) + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+  }
+  tick(); setInterval(tick, 1000);
+
+  // ===== Email obfuscation bypass =====
+  (function () {
+    const decode = (s) => s.replace('+', '@');
+    document.querySelectorAll('[data-mail]').forEach(a => {
+      const addr = decode(a.dataset.mail);
+      a.setAttribute('href', 'mailto:' + addr);
+      // any inner text node containing "·" gets replaced with the addr
+      a.querySelectorAll('*').forEach(c => { /* no-op */ });
+      // direct text replacement for elements showing the placeholder
+      if (a.classList.contains('email-link') && a.textContent.trim() === '·') {
+        a.textContent = addr;
+      } else if (a.classList.contains('email-link')) {
+        // contact button keeps its own label
+      }
+    });
+    // override placeholder · in lines explicitly
+    document.querySelectorAll('a.email-link').forEach(a => {
+      if (a.textContent.trim() === '·' || a.textContent.trim() === '') {
+        a.textContent = decode(a.dataset.mail);
+      }
+    });
+  })();
+
+  // ===== Function key navigation =====
+  const fnkeys = document.querySelectorAll('.fnkey');
+  const sections = {
+    ident: document.getElementById('ident'),
+    desc: document.getElementById('desc'),
+    work: document.getElementById('work'),
+    exp: document.getElementById('exp'),
+    skills: document.getElementById('skills'),
+    contact: document.getElementById('contact')
+  };
+  function activateKey(tgt) {
+    fnkeys.forEach(k => k.classList.toggle('active', k.dataset.tgt === tgt));
+    if (sections[tgt]) {
+      window.scrollTo({ top: sections[tgt].offsetTop - 60, behavior: 'smooth' });
+    }
+  }
+  fnkeys.forEach(k => k.addEventListener('click', () => activateKey(k.dataset.tgt)));
+
+  // Sync function keys with scroll position
+  const sectionList = ['ident','desc','work','exp','skills','contact'];
+  function syncScroll() {
+    const y = window.scrollY + 120;
+    let active = 'ident';
+    for (const id of sectionList) {
+      if (sections[id] && sections[id].offsetTop <= y) active = id;
+    }
+    fnkeys.forEach(k => k.classList.toggle('active', k.dataset.tgt === active));
+  }
+  window.addEventListener('scroll', syncScroll, { passive: true });
+
+  // Keyboard F1-F6
+  window.addEventListener('keydown', (e) => {
+    const map = { F1:'ident', F2:'desc', F3:'work', F4:'exp', F5:'skills', F6:'contact' };
+    if (map[e.key]) {
+      e.preventDefault();
+      activateKey(map[e.key]);
+    }
+  });
+
+  // ===== Wire expand =====
+  document.querySelectorAll('.wire tr.head:not(.always-on)').forEach(h => {
+    h.addEventListener('click', () => h.classList.toggle('expanded'));
+  });
+
+  // ===== Watchlist row expand =====
+  const wlBody = document.getElementById('wl-body');
+  const projectDetails = {
+    '01': {
+      desc: '<strong>Full-stack financial analytics dashboard</strong> with a live Workday Financial Management connection via SOAP API. Built to replace manual journal export and analysis workflows.',
+      features: [
+        '<strong>Live journal data</strong> filtered by company, date, cost center',
+        '<strong>Grounded AI chat</strong> — Claude responds only on the fetched dataset',
+        'Direct journal creation w/ debit/credit validation',
+        'Executive Dashboard w/ AI-narrated KPI cards',
+        'One-click PowerPoint export for leadership reporting',
+        'Presented to <strong>60+ senior leaders</strong> as a client offering'
+      ],
+      stack: ['Node.js','Workday SOAP WWS v42','Claude AI','Chart.js','pptxgenjs','Canvas Design System']
+    },
+    '02': {
+      desc: 'Research-grade analytics platform built on <strong>728,719 IRS Form 990 filings</strong> — designed to replace a client\'s PowerBI tool with richer data and AI-powered context.',
+      features: [
+        'Full-text search w/ expandable org panels',
+        'Balance sheet · revenue/expense · 9-yr history · peer compare',
+        '<strong>Spotlight</strong> — Claude surfaces named org snapshots in chat',
+        'World Bank income-group context for healthcare/oncology orgs',
+        'Pipeline: Python → SQLite (728k rows in ~15 min build)',
+        'No Python at runtime · static SQLite at the edge'
+      ],
+      stack: ['Node.js','Python','SQLite','ProPublica API','World Bank API','FRED','Chart.js']
+    },
+    '03': {
+      desc: 'Claude-driven tool for mass-loading enterprise configuration. Claude generates structured XLSX from natural language; server forwards through a <strong>full e2e pipeline</strong>.',
+      features: [
+        'File upload → load set creation → import',
+        'Load initiation → event polling → error retrieval',
+        'Replaces a manual <strong>Playwright automation</strong>',
+        'Conversational interface for non-technical consultants',
+        'OAuth 2.0 token refresh on the server side',
+        'XLSX generation directly from prompt'
+      ],
+      stack: ['Node.js','CC Advanced Load API','OAuth 2.0','Claude AI','xlsx']
+    },
+    '04': {
+      desc: '<strong>Divi</strong> is an iOS app that ends the awkward math at the end of a meal. Snap the receipt, assign each line item to whoever ordered it, and Divi sends a pre-filled <strong>Venmo charge</strong> to everyone at the table &mdash; <strong>under a minute</strong>.',
+      features: [
+        'GPT-4o vision parses every line item, qty, tax, tip, fees',
+        'Tap-to-assign UI &mdash; unassigned items highlighted',
+        'Tax &amp; tip distribute proportionally by subtotal share',
+        'Venmo deep-link with itemized note ("Tuna Tataki $18, ...")',
+        'Pro tier: bill history, saved groups, watermark removal',
+        'Splits by what people actually ordered &mdash; not equally'
+      ],
+      stack: ['React Native','Expo','GPT-4o Vision','Zustand','Venmo Deep-Link','TestFlight']
+    }
+  };
+
+  wlBody.addEventListener('click', (e) => {
+    const tr = e.target.closest('tr[data-row]');
+    if (!tr) return;
+    const id = tr.dataset.row;
+    const next = tr.nextElementSibling;
+    if (next && next.classList.contains('expand-row') && next.dataset.for === id) {
+      next.remove();
+      tr.classList.remove('expanded');
+      return;
+    }
+    // close any open
+    document.querySelectorAll('.expand-row').forEach(r => r.remove());
+    document.querySelectorAll('tr.expanded').forEach(r => r.classList.remove('expanded'));
+
+    const d = projectDetails[id];
+    const exp = document.createElement('tr');
+    exp.className = 'expand-row';
+    exp.dataset.for = id;
+    exp.innerHTML = `
+      <td colspan="7">
+        <div class="desc">${d.desc}</div>
+        <ul class="features">${d.features.map(f => `<li>${f}</li>`).join('')}</ul>
+        <div class="stack-row">${d.stack.map(s => `<span class="pill">${s}</span>`).join('')}</div>
+      </td>`;
+    tr.classList.add('expanded');
+    tr.parentNode.insertBefore(exp, tr.nextSibling);
+  });
+
+  // ===== Ticker =====
+  const tickerData = [
+    { sym: 'AVAIL', val: 'Q3 2026', dir: 'up', delta: '▲ OPEN' },
+    { sym: 'PROJ', val: '5 SHIPPED', dir: 'up', delta: '▲ +1 YTD' },
+    { sym: 'USERS', val: '1,200', dir: 'up', delta: '▲ +180' },
+    { sym: 'STACK', val: 'NODE+CLAUDE+WWS', dir: '', delta: '' },
+    { sym: 'EXP', val: '3.5Y ACN', dir: 'up', delta: '▲ SR' },
+    { sym: 'AWARDS', val: 'WOW · TOP 1%', dir: 'up', delta: '★' },
+    { sym: 'EDU', val: 'UVA STATS', dir: '', delta: '' },
+    { sym: 'CCY', val: 'USD', dir: '', delta: '' },
+    { sym: 'TZ', val: 'EST UTC-5', dir: '', delta: '' },
+    { sym: 'DEFECTS', val: '300+ RESOLVED', dir: 'up', delta: '▲' },
+    { sym: 'CLIENTS', val: 'F500', dir: '', delta: '' },
+    { sym: 'NEW', val: 'AI × ENTERPRISE FINANCE', dir: 'up', delta: '★' }
+  ];
+  function buildTicker() {
+    const trk = document.getElementById('ticker');
+    const html = tickerData.map(t => {
+      const cls = t.dir === 'up' ? 'up' : t.dir === 'dn' ? 'dn' : '';
+      return `<span class="tk"><span class="sym">${t.sym}</span>${t.val} <span class="${cls}">${t.delta}</span></span>`;
+    }).join('');
+    trk.innerHTML = html + html; // double for loop
+  }
+  buildTicker();
+
+  // ===== Command line =====
+  const cmd = document.getElementById('cmd');
+  const cmdMap = {
+    HDR: 'ident', HEADER: 'ident', HOME: 'ident',
+    DES: 'desc', DESC: 'desc', ABOUT: 'desc',
+    WORK: 'work', WLST: 'work', PROJECTS: 'work',
+    EXP: 'exp', WIRE: 'exp', EXPERIENCE: 'exp',
+    SKLS: 'skills', SKILLS: 'skills',
+    CTC: 'contact', CONTACT: 'contact',
+    GO: 'ident'
+  };
+  function cmdHelp() {
+    cmd.value = '';
+    cmd.placeholder = 'COMMANDS: HDR · DES · WORK · EXP · SKLS · CTC · GO';
+    setTimeout(() => { cmd.placeholder = 'type a function code (HDR · DES · WORK · EXP · SKLS · CTC)'; }, 5000);
+  }
+  cmd.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const v = cmd.value.trim().toUpperCase();
+      const tgt = cmdMap[v];
+      if (tgt) {
+        activateKey(tgt);
+        cmd.value = '';
+      } else if (v) {
+        cmd.value = '';
+        cmd.placeholder = 'UNKNOWN CMD: "' + v + '" — TRY HDR · DES · WORK · EXP · SKLS · CTC';
+        setTimeout(() => { cmd.placeholder = 'type a function code (HDR · DES · WORK · EXP · SKLS · CTC)'; }, 2400);
+      }
+    }
+  });
+
+  // Init
+  syncScroll();
+</script>
+
+</body>
+</html>
