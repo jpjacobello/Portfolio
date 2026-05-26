@@ -662,14 +662,13 @@
   .skill-row:nth-child(even) { background: rgba(0,0,0,0.015); }
   .skill-row .name { color: var(--text); font-weight: 500; }
   .skill-row .check {
-    width: 16px; height: 16px;
-    border-radius: 4px;
-    background: var(--green);
-    display: flex; align-items: center; justify-content: center;
-    color: white;
-    margin-right: 12px;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--muted);
+    margin-right: 14px;
     flex-shrink: 0;
   }
+  .skill-row .check svg { display: none; }
 
   /* Contact card — like vCard preview */
   .vcard {
