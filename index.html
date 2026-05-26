@@ -3,1255 +3,1406 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>JPJ &lt;EQUITY&gt; — Jacobello, JP</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>JP Jacobello — Portfolio.app</title>
 <style>
   :root {
-    --bg: #000000;
-    --bg-1: #050505;
-    --panel: #0a0a0a;
-    --line: #1f1f1f;
-    --line-2: #2a2a2a;
-    --amber: #ffa31a;
-    --amber-2: #ffc266;
-    --amber-dim: #b06d00;
-    --orange-bar: #ff6b00;
-    --white: #f0f0f0;
-    --gray: #a0a0a0;
-    --gray-2: #585858;
-    --green: #2eea76;
-    --green-dim: #1a8a45;
-    --red: #ff4444;
-    --cyan: #56d4ff;
-    --blue: #2b6fff;
-    --blue-bar: #1a3a8a;
-    --magenta: #ff52e4;
+    --bg: #1f2939;
+    --window: rgba(246, 246, 248, 0.92);
+    --window-solid: #f6f6f8;
+    --sidebar: rgba(232, 232, 236, 0.78);
+    --sidebar-solid: #e8e8ec;
+    --chrome: rgba(228, 228, 232, 0.92);
+    --text: #1c1c1e;
+    --text-2: #5e5e63;
+    --text-3: #8e8e93;
+    --line: rgba(0,0,0,0.08);
+    --line-2: rgba(0,0,0,0.12);
+    --accent: #0a84ff;
+    --accent-soft: rgba(10, 132, 255, 0.12);
+    --green: #28a745;
+    --orange: #ff9500;
+    --red: #ff453a;
+    --yellow: #ffd60a;
+    --selection: #d8e8fb;
+    --selection-bar: rgba(10, 132, 255, 0.85);
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
+  html, body { margin: 0; padding: 0; height: 100%; }
   body {
-    font-family: "IBM Plex Mono", ui-monospace, "Menlo", monospace;
-    background: var(--bg);
-    color: var(--amber);
-    font-size: 12px;
-    line-height: 1.4;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(60% 50% at 15% 20%, #c8b8e0 0%, transparent 55%),
+      radial-gradient(70% 60% at 85% 75%, #88a3d6 0%, transparent 60%),
+      radial-gradient(50% 40% at 50% 50%, #a6c5e8 0%, transparent 70%),
+      linear-gradient(160deg, #4a5b8c 0%, #2c3a5f 100%);
+    background-attachment: fixed;
+    overflow: hidden;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-    font-feature-settings: "ss01";
-  }
-  ::selection { background: var(--amber); color: #000; }
-  ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-track { background: #000; }
-  ::-webkit-scrollbar-thumb { background: var(--gray-2); }
-  a { color: var(--cyan); text-decoration: none; }
-  a:hover { background: var(--cyan); color: #000; }
-
-  /* Subtle scanline effect — very faint */
-  body::before {
-    content: "";
-    position: fixed; inset: 0;
-    background-image: repeating-linear-gradient(
-      0deg,
-      rgba(255, 163, 26, 0.012) 0,
-      rgba(255, 163, 26, 0.012) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-    pointer-events: none;
-    z-index: 100;
-  }
-
-  /* CRT vignette */
-  body::after {
-    content: "";
-    position: fixed; inset: 0;
-    background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%);
-    pointer-events: none;
-    z-index: 100;
-  }
-
-  .screen {
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 0;
-    border-left: 1px solid var(--line);
-    border-right: 1px solid var(--line);
-    min-height: 100vh;
-  }
-
-  /* TOP STATUS BAR */
-  .topbar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 16px;
-    padding: 6px 12px;
-    background: #000;
-    border-bottom: 1px solid var(--line);
-    font-size: 11px;
-    color: var(--gray);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    min-width: 0;
-  }
-  .topbar > * { min-width: 0; flex-shrink: 0; }
-  .topbar .clock { flex: 0 0 auto; }
-  .topbar .indic { flex: 1 1 auto; text-align: right; }
-  .topbar .cmd { flex: 0 0 auto; white-space: nowrap; }
-  @media (max-width: 700px) {
-    .topbar .indic { text-align: left; flex-basis: 100%; }
-  }
-  .topbar .clock { color: var(--amber); }
-  .topbar .clock .sep { color: var(--gray); margin: 0 4px; }
-  .topbar .indic { color: var(--green); }
-  .topbar .indic.dot::before { content: "●"; color: var(--green); margin-right: 4px; animation: pulse 2s infinite; }
-  @keyframes pulse { 50% { opacity: 0.4; } }
-  .topbar .cmd { color: var(--white); font-weight: 600; }
-  .topbar .cmd b { color: var(--amber); }
-
-  /* FUNCTION KEY BAR */
-  .fnkeys {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    border-bottom: 1px solid var(--line);
-    background: var(--bg-1);
-  }
-  .fnkey {
-    padding: 7px 10px;
-    border-right: 1px solid var(--line);
-    font-size: 11px;
-    color: var(--gray);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    cursor: pointer;
-    transition: background 0.1s, color 0.1s;
-    user-select: none;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .fnkey:last-child { border-right: 0; }
-  .fnkey .k {
-    background: var(--amber);
-    color: #000;
-    padding: 1px 5px;
-    font-weight: 700;
-    font-size: 10px;
-  }
-  .fnkey:hover { background: rgba(255,163,26,0.08); color: var(--white); }
-  .fnkey.active { background: var(--amber); color: #000; }
-  .fnkey.active .k { background: #000; color: var(--amber); }
-
-  /* HEADER (the "security identifier" panel) */
-  .ident {
-    border-bottom: 1px solid var(--line);
-    padding: 0;
-  }
-  .ident-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 12px;
-    background: linear-gradient(90deg, var(--orange-bar) 0%, #c75300 100%);
-    color: #000;
-    font-weight: 600;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  .ident-bar .right { display: flex; gap: 14px; align-items: center; }
-  .ident-bar .right span { font-weight: 500; }
-
-  .ident-main {
-    padding: 36px 16px 32px;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 24px;
-    align-items: end;
-  }
-  .ident-name {
-    font-size: clamp(36px, 6vw, 64px);
-    font-weight: 600;
-    color: var(--amber);
-    letter-spacing: 0.02em;
-    line-height: 0.95;
-  }
-  .ident-name .equity {
-    font-size: 14px;
-    color: var(--white);
-    background: var(--blue-bar);
-    padding: 3px 8px;
-    margin-left: 12px;
-    vertical-align: 6px;
-    letter-spacing: 0.08em;
-  }
-  .ident-sub {
-    color: var(--white);
-    margin-top: 6px;
+    font-feature-settings: "ss01", "cv11";
     font-size: 13px;
   }
-  .ident-sub .pipe { color: var(--gray); margin: 0 8px; }
-  .ident-sub strong { color: var(--amber); font-weight: 500; }
 
-  .ident-quote {
-    text-align: right;
-    font-family: "IBM Plex Mono", monospace;
+  /* Menu bar (macOS top) */
+  .menubar {
+    height: 28px;
+    background: rgba(0,0,0,0.2);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    color: rgba(255,255,255,0.95);
+    display: flex; align-items: center;
+    padding: 0 16px;
+    gap: 22px;
+    font-size: 13px;
+    position: relative;
+    z-index: 50;
   }
-  .quote-big {
-    font-size: 36px;
-    color: var(--green);
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: 0.01em;
+  .menubar .apple { font-size: 15px; }
+  .menubar .app-name { font-weight: 600; }
+  .menubar .menu-item { color: rgba(255,255,255,0.9); cursor: default; }
+  .menubar .spacer { flex: 1; }
+  .menubar .menu-right { display: flex; gap: 14px; align-items: center; font-size: 12px; }
+  .menubar .menu-right .ind { font-size: 11px; }
+  .menubar .battery {
+    width: 26px; height: 12px;
+    border: 1px solid rgba(255,255,255,0.7);
+    border-radius: 3px;
+    padding: 1px;
+    position: relative;
   }
-  .quote-delta {
-    color: var(--green);
-    font-size: 12px;
-    margin-top: 4px;
+  .menubar .battery::after {
+    content: "";
+    position: absolute;
+    right: -3px; top: 3px;
+    width: 2px; height: 4px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 0 1px 1px 0;
   }
-  .quote-label {
-    color: var(--gray);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 4px;
+  .menubar .battery .fill {
+    height: 100%;
+    width: 78%;
+    background: rgba(255,255,255,0.9);
+    border-radius: 1px;
   }
 
-  /* STAT STRIP */
-  .stat-strip {
+  /* Window */
+  .window {
+    position: absolute;
+    top: 56px; left: 5%; right: 5%; bottom: 70px;
+    background: var(--window);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border-radius: 12px;
+    box-shadow:
+      0 0 0 0.5px rgba(0,0,0,0.3),
+      0 20px 50px rgba(0,0,0,0.4),
+      0 50px 100px rgba(0,0,0,0.25);
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border-bottom: 1px solid var(--line);
-    border-top: 1px solid var(--line);
-  }
-  .stat-strip .cell {
-    padding: 10px 12px;
-    border-right: 1px solid var(--line);
-  }
-  .stat-strip .cell:last-child { border-right: 0; }
-  .stat-strip .cell .lbl {
-    color: var(--gray);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 4px;
-  }
-  .stat-strip .cell .val {
-    color: var(--white);
-    font-size: 16px;
-    font-weight: 500;
-  }
-  .stat-strip .cell .val.amber { color: var(--amber); }
-  .stat-strip .cell .val.green { color: var(--green); }
-  .stat-strip .cell .delta {
-    font-size: 10px;
-    color: var(--green);
-    margin-left: 4px;
-    font-weight: 400;
+    grid-template-columns: 220px 1fr;
+    grid-template-rows: 44px 1fr 28px;
+    grid-template-areas:
+      "chrome chrome"
+      "sidebar main"
+      "status status";
+    overflow: hidden;
+    max-width: 1500px;
+    margin: 0 auto;
   }
 
-  /* GRID LAYOUT FOR MAIN SECTIONS */
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
+  /* Window chrome / title bar */
+  .chrome {
+    grid-area: chrome;
+    background: var(--chrome);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--line);
-  }
-  .grid-2 > .panel + .panel { border-left: 1px solid var(--line); }
-
-  .panel {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    padding: 0 16px;
+    gap: 14px;
+    -webkit-app-region: drag;
   }
-  .panel-head {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 6px 10px;
-    background: var(--blue-bar);
-    color: var(--white);
+  .traffic { display: flex; gap: 8px; }
+  .traffic .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 0.5px solid rgba(0,0,0,0.1);
+    cursor: pointer;
+  }
+  .traffic .dot.r { background: #ff5f57; }
+  .traffic .dot.y { background: #ffbd2e; }
+  .traffic .dot.g { background: #28c840; }
+  .chrome .nav-arrows {
+    display: flex; gap: 4px;
+    color: var(--text-3);
+  }
+  .chrome .nav-arrows button {
+    border: 0; background: transparent;
+    width: 28px; height: 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-3);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chrome .nav-arrows button:hover { background: rgba(0,0,0,0.06); color: var(--text-2); }
+  .chrome .path {
+    flex: 1;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .chrome .path .crumb {
+    color: var(--text-2); font-weight: 500;
+  }
+  .chrome .path .sep {
+    color: var(--text-3); font-size: 10px;
+  }
+  .chrome .actions { display: flex; gap: 6px; align-items: center; }
+  .chrome .actions button {
+    border: 0; background: transparent;
+    color: var(--text-2);
+    padding: 4px 8px; border-radius: 6px;
+    font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .chrome .actions button:hover { background: rgba(0,0,0,0.06); }
+
+  /* Sidebar */
+  .sidebar {
+    grid-area: sidebar;
+    background: var(--sidebar);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-right: 1px solid var(--line);
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+  .sidebar-group {
+    padding: 0 6px;
+    margin-bottom: 14px;
+  }
+  .sidebar-title {
     font-size: 11px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    color: var(--text-3);
+    padding: 6px 10px 4px;
+    text-transform: capitalize;
+  }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
+  }
+  .sidebar-item:hover { background: rgba(0,0,0,0.05); }
+  .sidebar-item.active {
+    background: var(--selection-bar);
+    color: white;
+  }
+  .sidebar-item.active .ico path,
+  .sidebar-item.active .ico circle,
+  .sidebar-item.active .ico rect { fill: white; }
+  .sidebar-item.active .badge { background: rgba(255,255,255,0.25); color: white; }
+  .sidebar-item .ico {
+    width: 17px; height: 17px;
+    flex-shrink: 0;
+  }
+  .sidebar-item .label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sidebar-item .badge {
+    font-size: 10px;
+    background: rgba(0,0,0,0.12);
+    color: var(--text-2);
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  /* Main pane */
+  .main {
+    grid-area: main;
+    background: var(--window-solid);
+    overflow-y: auto;
+    position: relative;
+  }
+  .main::-webkit-scrollbar { width: 10px; }
+  .main::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; border: 2px solid var(--window-solid); }
+
+  /* Status bar */
+  .status {
+    grid-area: status;
+    background: var(--chrome);
+    border-top: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 14px;
+    font-size: 11px;
+    color: var(--text-3);
+  }
+
+  /* ===== Content view ===== */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* About page — like Preview.app showing a document */
+  .doc {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 56px 64px;
+  }
+  .doc-header {
+    display: flex; align-items: center; gap: 20px;
+    margin-bottom: 36px;
+    padding-bottom: 28px;
     border-bottom: 1px solid var(--line);
   }
-  .panel-head .id {
-    background: var(--amber);
-    color: #000;
-    padding: 1px 6px;
-    font-size: 10px;
-    margin-right: 8px;
+  .doc-icon {
+    width: 80px; height: 80px;
+    border-radius: 18px;
+    background: linear-gradient(160deg, #0a84ff 0%, #5e5ce6 100%) center / cover no-repeat;
+    background-image: url("jp-profile.jpg");
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 38px; font-weight: 600;
+    box-shadow: 0 8px 24px rgba(10, 132, 255, 0.35);
+    flex-shrink: 0;
+    overflow: hidden;
   }
-  .panel-head .right {
-    color: var(--amber-2);
-    font-size: 10px;
-    font-weight: 400;
+  .doc-header .meta { flex: 1; min-width: 0; }
+  .doc-header .filename {
+    font-size: 11px; color: var(--text-3);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    margin-bottom: 4px;
   }
-  .panel-body {
-    padding: 12px;
-    flex: 1;
+  .doc-header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
   }
+  .doc-header .role {
+    margin-top: 8px;
+    color: var(--text-2);
+    font-size: 14px;
+  }
+  .doc-header .role strong { color: var(--text); font-weight: 500; }
 
-  /* DESCRIPTION (about) panel */
-  .desc-text {
-    color: var(--white);
-    font-size: 12px;
-    line-height: 1.65;
-    margin: 0 0 10px;
+  .doc p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
   }
-  .desc-text strong { color: var(--amber); font-weight: 500; }
-  .desc-text .hi { color: var(--green); }
-  .desc-text .pin { color: var(--cyan); }
-
-  .kv-table {
-    border-top: 1px dashed var(--line-2);
-    margin-top: 12px;
-    padding-top: 10px;
-    width: 100%;
-  }
-  .kv-row {
-    display: flex; justify-content: space-between;
-    padding: 3px 0;
+  .doc p strong { font-weight: 600; }
+  .doc h2 {
     font-size: 11px;
-  }
-  .kv-row .k { color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; font-size: 10px; }
-  .kv-row .v { color: var(--white); }
-  .kv-row .v.amber { color: var(--amber); }
-
-  /* WATCHLIST (projects) */
-  .watchlist {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 11px;
-  }
-  .watchlist thead th {
-    text-align: left;
-    padding: 6px 10px;
-    background: var(--bg-1);
-    color: var(--gray);
-    font-weight: 500;
+    font-weight: 600;
+    color: var(--text-3);
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    font-size: 10px;
-    border-bottom: 1px solid var(--line);
+    margin: 36px 0 14px;
   }
-  .watchlist thead th.r { text-align: right; }
-  .watchlist tbody tr {
+
+  /* Quick info card */
+  .info-card {
+    background: rgba(0,0,0,0.03);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 28px;
+  }
+  .info-card .row {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .info-card .k {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+  .info-card .v {
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .info-card .v.acc { color: var(--accent); }
+  .info-card .v.green { color: var(--green); }
+
+  .doc-actions {
+    margin-top: 28px;
+    display: flex; gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid var(--line-2);
+    background: white;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .btn:hover { background: #f0f0f3; }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .btn-primary:hover { background: #0070e0; }
+
+  /* Projects — Finder column / icon view */
+  .pane-header {
+    padding: 24px 32px 18px;
     border-bottom: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: flex-end;
+    gap: 16px;
+  }
+  .pane-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  .pane-header .subtitle {
+    color: var(--text-2);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  .pane-header .view-toggle {
+    display: flex;
+    background: rgba(0,0,0,0.06);
+    border-radius: 7px;
+    padding: 2px;
+    gap: 1px;
+  }
+  .pane-header .view-toggle button {
+    padding: 4px 10px;
+    background: transparent;
+    border: 0;
+    border-radius: 5px;
+    font-size: 12px;
+    color: var(--text-2);
+    cursor: pointer;
+  }
+  .pane-header .view-toggle button.active {
+    background: white;
+    color: var(--text);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+
+  /* Project icon grid */
+  .proj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    padding: 24px 32px;
+  }
+  .proj-tile {
+    text-align: center;
+    padding: 12px 8px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background 0.1s;
   }
-  .watchlist tbody tr:hover { background: rgba(255,163,26,0.06); }
-  .watchlist tbody tr.expanded { background: rgba(255,163,26,0.04); }
-  .watchlist tbody td {
-    padding: 8px 10px;
-    color: var(--white);
-    vertical-align: top;
+  .proj-tile:hover { background: rgba(0,0,0,0.04); }
+  .proj-tile.selected {
+    background: var(--selection);
   }
-  .watchlist tbody td.idx { color: var(--gray); width: 24px; }
-  .watchlist tbody td.tic { color: var(--amber); font-weight: 600; }
-  .watchlist tbody td.r { text-align: right; }
-  .watchlist tbody td .arrow { color: var(--green); }
-  .watchlist tbody td .arrow.dn { color: var(--red); }
-  .watchlist tbody td .stack { font-size: 10px; color: var(--gray); margin-top: 3px; }
-  .watchlist .star { color: var(--amber); }
-
-  .expand-row td {
-    padding: 12px 14px 16px !important;
-    background: #060606;
-    border-top: 1px solid var(--line);
+  .proj-icon {
+    width: 80px; height: 80px;
+    margin: 0 auto 8px;
+    border-radius: 18px;
+    background: linear-gradient(160deg, #0a84ff 0%, #5e5ce6 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-weight: 700; font-size: 28px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2);
+    position: relative;
   }
-  .expand-row .desc {
-    color: var(--white);
+  .proj-icon .badge {
+    position: absolute; top: -4px; right: -4px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--red);
+    color: white;
     font-size: 11px;
-    line-height: 1.6;
-    margin-bottom: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
   }
-  .expand-row .desc strong { color: var(--amber); }
-  .expand-row .features {
-    list-style: none; padding: 0; margin: 0 0 10px;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px;
+  .proj-icon.acnt { background: linear-gradient(160deg, #0a84ff, #5e5ce6); }
+  .proj-icon.anlz { background: linear-gradient(160deg, #34c759, #248a3d); }
+  .proj-icon.cfg { background: linear-gradient(160deg, #ff9500, #ff6200); }
+  .proj-icon.divi { background: linear-gradient(160deg, #ff453a, #c70015); }
+  .proj-tile .name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 2px;
   }
-  .expand-row .features li {
-    font-size: 11px; color: var(--white);
-    padding-left: 14px; position: relative;
-    line-height: 1.5;
+  .proj-tile .meta {
+    font-size: 11px;
+    color: var(--text-3);
   }
-  .expand-row .features li::before {
-    content: "▸"; color: var(--green);
-    position: absolute; left: 0;
+  .proj-tile.selected .name {
+    background: var(--selection-bar);
+    color: white;
+    padding: 1px 6px;
+    border-radius: 4px;
+    display: inline-block;
   }
-  .expand-row .stack-row {
-    display: flex; flex-wrap: wrap; gap: 4px;
-    margin-top: 8px;
+
+  /* Quick Look for project detail */
+  .proj-detail {
+    margin: 0 32px 32px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
   }
-  .expand-row .pill {
-    font-size: 10px;
-    padding: 2px 8px;
-    border: 1px solid var(--gray-2);
-    color: var(--cyan);
+  .proj-detail-header {
+    display: flex; align-items: center; gap: 18px;
+    padding: 22px 24px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(0,0,0,0.02), transparent);
+  }
+  .proj-detail-header .picon {
+    width: 60px; height: 60px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 22px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    flex-shrink: 0;
+  }
+  .proj-detail-header h3 {
+    font-size: 20px; font-weight: 700; margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .proj-detail-header .tagline {
+    font-size: 13px; color: var(--text-2);
+  }
+  .proj-detail-header .featured-pill {
+    margin-left: auto;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
+  .proj-detail-body { padding: 22px 24px; }
+  .proj-detail-body p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 16px;
+    color: var(--text);
+  }
+  .proj-detail-body p strong { font-weight: 600; }
 
-  /* WIRE / NEWS FEED */
-  .wire {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 11px;
+  .proj-meta-grid {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 8px 16px;
+    margin: 16px 0;
+    padding: 14px 16px;
+    background: rgba(0,0,0,0.025);
+    border-radius: 8px;
+    font-size: 12px;
   }
-  .wire tbody tr { border-bottom: 1px dashed var(--line-2); }
-  .wire tbody tr:last-child { border-bottom: 0; }
-  .wire .sub { display: none; }
-  .wire .head.expanded + .sub { display: table-row; }
-  .wire .head { cursor: pointer; }
-  .wire .head:hover td { background: rgba(255,163,26,0.04); }
-  .wire .head.always-on + .sub { display: table-row; }
-  .wire .head td.expand-ind::before {
-    content: "+";
-    color: var(--gray);
-    margin-right: 6px;
-    font-weight: 600;
-  }
-  .wire .head.expanded td.expand-ind::before, .wire .head.always-on td.expand-ind::before { content: "−"; color: var(--amber); }
-  .wire tbody td { padding: 9px 10px; vertical-align: top; }
-  .wire .time { color: var(--gray); font-size: 10px; width: 110px; white-space: nowrap; }
-  .wire .badge {
-    display: inline-block;
-    padding: 1px 6px;
-    background: var(--amber);
-    color: #000;
-    font-weight: 600;
-    font-size: 9px;
+  .proj-meta-grid .k {
+    color: var(--text-3);
+    font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    width: 78px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  .proj-meta-grid .v { color: var(--text); }
+
+  .features-list {
+    list-style: none; padding: 0; margin: 16px 0 0;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .features-list li {
+    display: flex; gap: 10px;
+    font-size: 13px; color: var(--text);
+    line-height: 1.5;
+  }
+  .features-list li::before {
+    content: "✓";
+    color: var(--green);
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .features-list li strong { font-weight: 600; }
+
+  .tech-row {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .tech-pill {
+    font-size: 11px;
+    padding: 3px 9px;
+    background: rgba(0,0,0,0.06);
+    color: var(--text-2);
+    border-radius: 5px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  /* Experience timeline */
+  .exp-list {
+    padding: 24px 32px;
+    list-style: none;
+    margin: 0;
+  }
+  .exp-item {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 24px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .exp-item:last-child { border-bottom: 0; }
+  .exp-date {
+    font-size: 12px;
+    color: var(--text-3);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    padding-top: 2px;
+  }
+  .exp-date .current {
+    display: inline-block;
+    background: var(--green);
+    color: white;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 10px;
+    margin-top: 4px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .exp-role {
+    font-size: 16px; font-weight: 600;
+    margin: 0 0 4px;
+    letter-spacing: -0.005em;
+  }
+  .exp-co {
+    color: var(--text-2);
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+  .exp-co .at { color: var(--text-3); }
+  .exp-bullets {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .exp-bullets li {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.55;
+    padding-left: 16px;
+    position: relative;
+  }
+  .exp-bullets li::before {
+    content: "-";
+    position: absolute; left: 0;
+    color: var(--text-3);
+  }
+  .exp-bullets li strong { color: var(--text); font-weight: 500; }
+
+  /* Skills */
+  .skills-pane { padding: 24px 32px; }
+  .skills-cat {
+    margin-bottom: 28px;
+  }
+  .skills-cat-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .skills-cat-name .ct {
+    font-size: 11px;
+    color: var(--text-3);
+    font-weight: 400;
+  }
+  .skills-rows {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .skill-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .skill-row:last-child { border-bottom: 0; }
+  .skill-row:nth-child(even) { background: rgba(0,0,0,0.015); }
+  .skill-row .name { color: var(--text); font-weight: 500; }
+  .skill-row .check {
+    width: 16px; height: 16px;
+    border-radius: 4px;
+    background: var(--green);
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  /* Contact card — like vCard preview */
+  .vcard {
+    max-width: 480px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .vcard-banner {
+    height: 100px;
+    background: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 50%, #bf5af2 100%);
+  }
+  .vcard-body {
+    padding: 0 32px 32px;
+    position: relative;
+  }
+  .vcard-avatar {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(160deg, #2c3a5f, #4a5b8c) center / cover no-repeat;
+    background-image: url("jp-profile.jpg");
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; font-weight: 700;
+    border: 5px solid white;
+    margin-top: -50px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    overflow: hidden;
+  }
+  .vcard h2 {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  .vcard .role {
+    color: var(--text-2);
+    font-size: 14px;
+    margin: 4px 0 22px;
+  }
+  .vcard-fields {
+    display: flex; flex-direction: column; gap: 6px;
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+  }
+  .vcard-field {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 14px;
+    padding: 8px 0;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .vcard-field:last-child { border-bottom: 0; }
+  .vcard-field .k {
+    color: var(--text-2);
+    font-size: 12px;
+  }
+  .vcard-field .v { font-weight: 500; }
+  .vcard-field .v a { color: var(--accent); text-decoration: none; }
+  .vcard-field .v a:hover { text-decoration: underline; }
+
+  /* Resume preview */
+  .pdf-preview {
+    padding: 40px;
     text-align: center;
   }
-  .wire .badge.cur { background: var(--green); }
-  .wire .badge.pro { background: var(--cyan); }
-  .wire .badge.hir { background: var(--white); }
-  .wire .badge.int { background: var(--gray); color: #000; }
-  .wire .head td { padding-bottom: 2px; }
-  .wire .role { color: var(--white); font-weight: 500; }
-  .wire .co { color: var(--amber); }
-  .wire .at { color: var(--gray); }
-  .wire .sub td { padding-top: 0 !important; padding-left: 130px !important; }
-  .wire .sub ul { list-style: none; padding: 0; margin: 4px 0 0; }
-  .wire .sub li {
-    color: var(--gray); font-size: 11px;
-    padding-left: 12px; position: relative; line-height: 1.55;
-    padding-bottom: 2px;
-  }
-  .wire .sub li::before {
-    content: "·"; color: var(--gray-2);
-    position: absolute; left: 0;
-  }
-  .wire .sub li strong { color: var(--white); font-weight: 500; }
-
-  /* SKILLS HEATMAP */
-  .skl-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0;
-  }
-  .skl-cat {
-    border-right: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    padding: 12px;
-  }
-  .skl-cat:nth-child(2n) { border-right: 0; }
-  .skl-cat-head {
-    color: var(--amber);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 10px;
-    display: flex; justify-content: space-between;
-  }
-  .skl-cat-head .ct { color: var(--gray); }
-  .skl-list { display: flex; flex-direction: column; gap: 3px; }
-  .skl-row {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 10px;
-    align-items: center;
-    font-size: 11px;
-    padding: 2px 0;
-  }
-  .skl-row .name { color: var(--white); }
-  .skl-row .bar {
-    width: 80px; height: 8px;
-    background: #1a1a1a;
-    position: relative;
-  }
-  .skl-row .bar .fill {
-    position: absolute; left: 0; top: 0; bottom: 0;
-    background: var(--amber);
-  }
-  .skl-row .bar.lvl-5 .fill { width: 100%; background: var(--green); }
-  .skl-row .bar.lvl-4 .fill { width: 80%; background: var(--amber); }
-  .skl-row .bar.lvl-3 .fill { width: 60%; background: var(--amber-dim); }
-  .skl-row .bar.lvl-2 .fill { width: 40%; background: var(--cyan); }
-  .skl-row .lbl {
-    color: var(--gray); font-size: 10px;
-    text-align: right;
-    min-width: 28px;
-  }
-
-  /* CONTACT panel */
-  .contact-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    border-bottom: 1px solid var(--line);
-  }
-  .contact-grid > div { padding: 14px 12px; }
-  .contact-grid > div:first-child { border-right: 1px solid var(--line); }
-  .contact-grid h3 {
-    margin: 0 0 10px;
-    color: var(--amber);
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 600;
-  }
-  .contact-grid .line {
-    display: grid; grid-template-columns: 110px 1fr;
-    gap: 8px;
-    font-size: 12px;
-    padding: 4px 0;
-  }
-  .contact-grid .line .k { color: var(--gray); text-transform: uppercase; font-size: 10px; letter-spacing: 0.06em; padding-top: 2px; }
-  .contact-grid .line .v { color: var(--white); }
-  .contact-grid .actions {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    margin-top: 12px;
-  }
-  .contact-grid .btn {
-    border: 1px solid var(--amber);
-    color: var(--amber);
-    background: transparent;
-    padding: 6px 12px;
-    font-family: inherit;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    cursor: pointer;
-    text-decoration: none;
-  }
-  .contact-grid .btn:hover { background: var(--amber); color: #000; }
-  .contact-grid .btn.green { border-color: var(--green); color: var(--green); }
-  .contact-grid .btn.green:hover { background: var(--green); color: #000; }
-
-  /* COMMAND LINE */
-  .cmdline {
-    border-top: 1px solid var(--line);
-    background: #000;
-    padding: 8px 12px;
-    display: flex; align-items: center; gap: 10px;
-    font-size: 12px;
-    position: sticky; bottom: 0; z-index: 50;
-  }
-  .cmdline .prompt { color: var(--green); }
-  .cmdline input {
-    flex: 1;
-    background: transparent; border: 0; outline: 0;
-    color: var(--amber); font-family: inherit; font-size: 12px;
-  }
-  .cmdline .blink {
-    display: inline-block; width: 8px; height: 14px;
-    background: var(--amber);
-    animation: blink 1s step-end infinite;
-    vertical-align: -2px;
-  }
-  @keyframes blink { 50% { opacity: 0; } }
-  .cmdline .help { color: var(--gray); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
-  .cmdline .help b { color: var(--amber); background: #000; }
-
-  /* TICKER */
-  .ticker {
-    border-top: 1px solid var(--line);
-    background: #000;
+  .pdf-paper {
+    width: 400px;
+    max-width: 100%;
+    aspect-ratio: 8.5 / 11;
+    background: white;
+    margin: 0 auto 24px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    text-align: left;
+    padding: 32px 36px;
     overflow: hidden;
-    white-space: nowrap;
-    padding: 6px 0;
-    font-size: 11px;
     position: relative;
   }
-  .ticker-track {
-    display: inline-block;
-    animation: tickslide 80s linear infinite;
-    padding-left: 100%;
+  .pdf-paper::after {
+    content: "";
+    position: absolute; left: 0; right: 0; bottom: 0;
+    height: 60%;
+    background: linear-gradient(to bottom, transparent, white);
+    pointer-events: none;
   }
-  .ticker-track:hover { animation-play-state: paused; }
-  @keyframes tickslide {
-    from { transform: translateX(0); }
-    to { transform: translateX(-100%); }
+  .pdf-paper h1 {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 700;
   }
-  .ticker .tk { color: var(--white); margin-right: 24px; }
-  .ticker .tk .sym { color: var(--amber); margin-right: 6px; }
-  .ticker .tk .up { color: var(--green); }
-  .ticker .tk .dn { color: var(--red); }
-
-  /* Section anchors should not jump (we manually scroll) */
-  section { scroll-margin-top: 0; }
-
-  /* Section heading bar (non-panel context) */
-  .sec-bar {
-    background: var(--blue-bar);
-    color: var(--white);
-    padding: 6px 10px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+  .pdf-paper .pdf-role { font-size: 11px; color: var(--text-2); margin-bottom: 14px; }
+  .pdf-paper .pdf-contact {
+    font-size: 9px; color: var(--text-3);
     border-bottom: 1px solid var(--line);
-    border-top: 1px solid var(--line);
-    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
   }
-  .sec-bar .id { background: var(--amber); color: #000; padding: 1px 6px; font-size: 10px; margin-right: 8px; }
-  .sec-bar .right { color: var(--amber-2); font-weight: 400; font-size: 10px; }
+  .pdf-paper h2 { font-size: 11px; margin: 12px 0 6px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+  .pdf-paper .pdf-line { font-size: 9px; line-height: 1.4; color: var(--text-2); margin-bottom: 6px; }
+  .pdf-paper .pdf-line b { color: var(--text); font-weight: 600; }
 
-  /* Banner switcher */
+  /* Version switcher dock at bottom */
   .versions {
     position: fixed;
-    bottom: 56px; left: 10px;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 60;
-    display: flex; gap: 0;
-    border: 1px solid var(--line);
-    background: #000;
-  }
-  @media (max-width: 1500px) {
-    .versions { display: none; }
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 8px;
+    background: rgba(60, 60, 67, 0.7);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 0 0 0.5px rgba(255,255,255,0.2);
   }
   .versions a {
-    padding: 6px 10px;
-    font-size: 10px;
-    color: var(--gray);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.15s;
   }
-  .versions a:last-child { border-right: 0; border-bottom: 0; }
-  .versions a { border-right: 1px solid var(--line); border-bottom: 0; }
-  .versions a.active { background: var(--amber); color: #000; }
-  .versions a:hover:not(.active) { color: var(--amber); background: transparent; }
+  .versions a:hover { background: rgba(255,255,255,0.1); color: white; }
+  .versions a.active { background: rgba(255,255,255,0.2); color: white; }
+  .versions a .ico {
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .versions a .ico.v1 { background: linear-gradient(160deg, #5e5ce6, #0a84ff); color: white; }
+  .versions a .ico.v2 { background: #000; color: #ffa31a; font-family: ui-monospace, monospace; }
+  .versions a .ico.v3 { background: linear-gradient(160deg, #f6f6f8, #d1d1d6); color: var(--text); border: 0.5px solid rgba(0,0,0,0.1); }
+  .versions a .ico.v4 { background: #fbf9f4; color: var(--text); border: 0.5px solid rgba(0,0,0,0.1); }
 
+  /* Mobile */
   @media (max-width: 900px) {
-    .grid-2, .skl-grid, .contact-grid { grid-template-columns: 1fr; }
-    .stat-strip { grid-template-columns: 1fr 1fr; }
-    .grid-2 > .panel + .panel { border-left: 0; border-top: 1px solid var(--line); }
-    .stat-strip .cell { border-bottom: 1px solid var(--line); }
-    .stat-strip .cell:nth-child(2n) { border-right: 0; }
-    .skl-cat { border-right: 0; border-bottom: 1px solid var(--line); }
-    .ident-main { grid-template-columns: 1fr; }
-    .ident-quote { text-align: left; }
-    .fnkeys { grid-template-columns: repeat(3, 1fr); }
-    .fnkey { font-size: 10px; padding: 8px 6px; gap: 4px; }
-    .versions { display: none; }
-    .ident-bar .right { flex-wrap: wrap; gap: 6px 10px; justify-content: flex-end; font-size: 10px; }
-    .watchlist thead th.col-cat,
-    .watchlist thead th.col-users,
-    .watchlist thead th.col-scale,
-    .watchlist thead th.col-year,
-    .watchlist tbody td.col-cat,
-    .watchlist tbody td.col-users,
-    .watchlist tbody td.col-scale,
-    .watchlist tbody td.col-year { display: none; }
-    .watchlist tbody td.tic { font-size: 13px; }
-    .stat-strip .cell .val { font-size: 20px; }
-    .ident-name { font-size: clamp(32px, 9vw, 48px); }
-    .contact-grid .actions { flex-direction: column; }
-    .contact-grid .btn { width: 100%; text-align: center; }
-    .contact-grid > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
-    .contact-grid .line { grid-template-columns: 90px 1fr; }
-    .cmdline .help { display: none; }
-    .topbar .cmd { font-size: 10px; }
+    body { overflow: auto; height: auto; min-height: 100vh; }
+    .window {
+      position: relative;
+      top: auto; left: 0; right: 0; bottom: auto;
+      margin: 12px;
+      border-radius: 10px;
+      height: auto;
+      min-height: calc(100vh - 110px);
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto 1fr auto;
+      grid-template-areas:
+        "chrome"
+        "sidebar"
+        "main"
+        "status";
+    }
+    .sidebar {
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+      max-height: 200px;
+    }
+    .doc { padding: 32px 24px; }
+    .doc-header { flex-direction: column; align-items: flex-start; }
+    .doc-header h1 { font-size: 28px; }
+    .info-card { grid-template-columns: 1fr; gap: 10px; }
+    .proj-grid { padding: 16px; }
+    .proj-detail { margin: 0 16px 24px; }
+    .exp-list, .skills-pane { padding: 18px 20px; }
+    .exp-item { grid-template-columns: 1fr; gap: 8px; }
+    .pane-header { padding: 18px 20px 14px; }
+    .pdf-paper { transform: scale(0.85); }
+    .versions { bottom: 8px; }
+    .versions a { padding: 6px 8px; font-size: 11px; }
   }
 </style>
 </head>
 <body>
 
-<aside class="versions">
-  <a href="portfolio.html">v1 · CARD</a>
-  <a href="terminal.html" class="active">v2 · TERM</a>
-</aside>
+<!-- Top menu bar -->
+<div class="menubar">
+  <span class="apple">􀣺</span>
+  <span class="app-name">Portfolio</span>
+  <span class="menu-item">File</span>
+  <span class="menu-item">Edit</span>
+  <span class="menu-item">View</span>
+  <span class="menu-item">Go</span>
+  <span class="menu-item">Window</span>
+  <span class="menu-item">Help</span>
+  <span class="spacer"></span>
+  <div class="menu-right">
+    <span class="ind">⌃</span>
+    <span class="ind">􀑉</span>
+    <span class="battery"><div class="fill"></div></span>
+    <span id="menu-clock">Tue 26 May 2:34 PM</span>
+  </div>
+</div>
 
-<div class="screen">
+<!-- Main window -->
+<div class="window">
 
-  <!-- TOP STATUS BAR -->
-  <header class="topbar">
-    <div class="clock">
-      <span id="clk-time">14:32:18</span>
-      <span class="sep">·</span>
-      <span id="clk-date">FRI 08 MAY 2026</span>
-      <span class="sep">·</span>
-      <span>EST</span>
+  <!-- Title bar / chrome -->
+  <div class="chrome">
+    <div class="traffic">
+      <div class="dot r"></div>
+      <div class="dot y"></div>
+      <div class="dot g"></div>
     </div>
-    <div class="indic dot">SESSION ACTIVE</div>
-    <div class="cmd"><b>JPJ</b> &lt;EQUITY&gt; <b>GO</b></div>
-  </header>
-
-  <!-- FUNCTION KEYS -->
-  <nav class="fnkeys">
-    <div class="fnkey active" data-tgt="ident"><span class="k">F1</span> HDR</div>
-    <div class="fnkey" data-tgt="desc"><span class="k">F2</span> DES</div>
-    <div class="fnkey" data-tgt="work"><span class="k">F3</span> WORK</div>
-    <div class="fnkey" data-tgt="exp"><span class="k">F4</span> EXP</div>
-    <div class="fnkey" data-tgt="skills"><span class="k">F5</span> SKLS</div>
-    <div class="fnkey" data-tgt="contact"><span class="k">F6</span> CTC</div>
-  </nav>
-
-  <!-- IDENT / HEADER -->
-  <section id="ident" class="ident" data-screen-label="01 Header">
-    <div class="ident-bar">
-      <div>JACOBELLO, JP &lt;EQUITY&gt; · PRIMARY LISTING</div>
-      <div class="right">
-        <span>PAGE 1/12</span>
-        <span>·</span>
-        <span>CCY: USD</span>
-        <span>·</span>
-        <span class="indic" style="color:#000;font-weight:700;">▲ AVAIL</span>
-      </div>
+    <div class="nav-arrows">
+      <button title="Back"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button title="Forward"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
-    <div class="ident-main">
-      <div>
-        <div class="ident-name">JACOBELLO, JP<span class="equity">EQTY</span></div>
-        <div class="ident-sub">
-          <strong>Sr Analyst</strong>
-          <span class="pipe">|</span>
-          Accenture · Technology
-          <span class="pipe">|</span>
-          New York, NY
-          <span class="pipe">|</span>
-          AI &amp; Enterprise Finance
-        </div>
-      </div>
-      <div class="ident-quote">
-        <div class="quote-label">AVAIL · Q3 2026</div>
-        <div class="quote-big">OPEN</div>
-        <div class="quote-delta">▲ +5 ROLES IN PIPELINE</div>
-      </div>
+    <div class="path">
+      <span class="crumb">JP's Mac</span>
+      <span class="sep">›</span>
+      <span class="crumb">Users</span>
+      <span class="sep">›</span>
+      <span class="crumb">jp</span>
+      <span class="sep">›</span>
+      <span id="crumb-current">About.md</span>
     </div>
-
-    <div class="stat-strip">
-      <div class="cell">
-        <div class="lbl">YEARS</div>
-        <div class="val amber">3.5</div>
-      </div>
-      <div class="cell">
-        <div class="lbl">USERS SERVED</div>
-        <div class="val">1,200<span class="delta">+</span></div>
-      </div>
-      <div class="cell">
-        <div class="lbl">PROJECTS SHIPPED</div>
-        <div class="val">5</div>
-      </div>
-      <div class="cell">
-        <div class="lbl">DEFECTS RESOLVED</div>
-        <div class="val">300<span class="delta">+</span></div>
-      </div>
-      <div class="cell">
-        <div class="lbl">AWARDS</div>
-        <div class="val green">WOW · TOP 1%</div>
-      </div>
-      <div class="cell">
-        <div class="lbl">CLIENTS</div>
-        <div class="val">F500</div>
-      </div>
+    <div class="actions">
+      <button title="Share"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button>
     </div>
-  </section>
-
-  <section id="desc" data-screen-label="02 Description">
-    <div class="sec-bar">
-      <div><span class="id">DES</span>DESCRIPTION</div>
-      <div class="right"></div>
-    </div>
-    <div style="padding:24px 18px 22px;max-width:880px;">
-      <p class="desc-text" style="font-size:14px;line-height:1.7;">
-        <strong>Technology Sr. Analyst at Accenture</strong> with 3+ years building enterprise systems for Fortune 500 clients. I work at the intersection of <span class="hi">AI and enterprise finance</span> — using Claude AI and live Workday APIs to ship tools that non-technical users can actually run.
-      </p>
-      <p class="desc-text" style="font-size:14px;line-height:1.7;color:var(--gray);">
-        Most useful where business stakeholders meet engineering teams — turning ambiguous finance, HR, and procurement requirements into <span class="pin">shipped tools</span>, not slide-deck recommendations.
-      </p>
-    </div>
-  </section>
-
-  <!-- WORK / WATCHLIST -->
-  <section id="work" data-screen-label="03 Work">
-    <div class="sec-bar">
-      <div><span class="id">WLST</span>SELECTED WORK · WATCHLIST · 4 ACTIVE</div>
-      <div class="right">SORT: FEATURED ▼ &nbsp; FILTER: ALL</div>
-    </div>
-    <table class="watchlist">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>TICKER / PROJECT</th>
-          <th class="col-cat">CATEGORY</th>
-          <th class="r col-users">USERS</th>
-          <th class="r col-scale">SCALE</th>
-          <th class="r col-year">YEAR</th>
-          <th class="r">STATUS</th>
-        </tr>
-      </thead>
-      <tbody id="wl-body">
-        <tr data-row="01">
-          <td class="idx">01</td>
-          <td class="tic">ACNT.ASST <span class="star">★</span><div class="stack">Accenture Accounting Assistant</div></td>
-          <td class="col-cat">ENTERPRISE AI</td>
-          <td class="r col-users">60+ ldrs</td>
-          <td class="r col-scale">Fortune 500</td>
-          <td class="r col-year">2025</td>
-          <td class="r"><span class="arrow">▲ FEATURED</span></td>
-        </tr>
-        <tr data-row="02">
-          <td class="idx">02</td>
-          <td class="tic">990.ANLZ<div class="stack">990 Nonprofit Financial Analyzer</div></td>
-          <td class="col-cat">DATA PLATFORM</td>
-          <td class="r col-users">728K orgs</td>
-          <td class="r col-scale">15.4B assets</td>
-          <td class="r col-year">2025</td>
-          <td class="r"><span class="arrow">▲ ACTIVE</span></td>
-        </tr>
-        <tr data-row="03">
-          <td class="idx">03</td>
-          <td class="tic">CFG.LOAD<div class="stack">Configuration Load Tool</div></td>
-          <td class="col-cat">CONFIG / AUTOMATION</td>
-          <td class="r col-users">1,420 rows</td>
-          <td class="r col-scale">e2e pipeline</td>
-          <td class="r col-year">2025</td>
-          <td class="r"><span class="arrow">▲ ACTIVE</span></td>
-        </tr>
-        <tr data-row="04">
-          <td class="idx">04</td>
-          <td class="tic">DIVI.IOS<div class="stack">Divi — Bill Splitter iOS App</div></td>
-          <td class="col-cat">MOBILE / CONSUMER</td>
-          <td class="r col-users">GPT-4o OCR</td>
-          <td class="r col-scale">&lt;60s split</td>
-          <td class="r col-year">2025</td>
-          <td class="r"><span class="arrow">▲ TESTFLIGHT</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-  <!-- EXPERIENCE / WIRE -->
-  <section id="exp" data-screen-label="04 Experience">
-    <div class="sec-bar">
-      <div><span class="id">WIRE</span>EMPLOYMENT WIRE · CHRONOLOGICAL</div>
-      <div class="right">5 EVENTS · 2019 — PRESENT</div>
-    </div>
-    <table class="wire">
-      <tbody>
-        <tr class="head always-on">
-          <td class="time">2024-12 → NOW</td>
-          <td><span class="badge cur">CURRENT</span></td>
-          <td class="expand-ind">
-            <div><span class="role">TECHNOLOGY SR. ANALYST</span> <span class="at">@</span> <span class="co">ACCENTURE</span> · NEW YORK, NY</div>
-          </td>
-        </tr>
-        <tr class="sub"><td colspan="3">
-          <ul>
-            <li>Designed and deployed enterprise-scale financial and procurement systems for Fortune 500 clients, automating reporting and routing workflows for <strong>1,200+ users</strong>.</li>
-            <li>Built AI-powered analytics applications using LLMs and APIs, enabling non-technical users to query financial data through a natural-language chatbot.</li>
-            <li>Presented AI prototype to <strong>60+ senior leaders</strong> as a potential client-facing offering.</li>
-            <li>Served as primary liaison to C-suite stakeholders, leading weekly status reviews.</li>
-          </ul>
-        </td></tr>
-
-        <tr class="head">
-          <td class="time">2022-09 → 2024-12</td>
-          <td><span class="badge pro">PROMOTED</span></td>
-          <td class="expand-ind">
-            <div><span class="role">TECHNOLOGY ANALYST</span> <span class="at">@</span> <span class="co">ACCENTURE</span> · NEW YORK, NY</div>
-          </td>
-        </tr>
-        <tr class="sub"><td colspan="3">
-          <ul>
-            <li>Recognized with <strong>Accenture WOW Award (top 1%)</strong> for innovation and cross-team collaboration.</li>
-            <li>Supported on-site Workday launch and change management for a public healthcare organization.</li>
-            <li>Led Projects and Budgets workstreams for a large enterprise insurance client.</li>
-            <li>Solutioned <strong>300+ defects</strong> in a single implementation, improving stability and stakeholder trust.</li>
-          </ul>
-        </td></tr>
-
-        <tr class="head">
-          <td class="time">2021-07</td>
-          <td><span class="badge int">INTERN</span></td>
-          <td class="expand-ind">
-            <div><span class="role">DATA ANALYST INTERN</span> <span class="at">@</span> <span class="co">KESWICK VINEYARDS</span> · KESWICK, VA</div>
-          </td>
-        </tr>
-        <tr class="sub"><td colspan="3">
-          <ul>
-            <li>Analyzed survey data from <strong>1,000+ wine-club members</strong> to develop a new business model.</li>
-            <li>Implemented strategy targeting a younger demographic, increasing margins by <strong>30%</strong>.</li>
-          </ul>
-        </td></tr>
-
-        <tr class="head">
-          <td class="time">2020-07 → 08</td>
-          <td><span class="badge int">INTERN</span></td>
-          <td class="expand-ind">
-            <div><span class="role">CLIENT SERVICE ADMIN INTERN</span> <span class="at">@</span> <span class="co">EHRENKRANZ PARTNERS</span> · NEW YORK, NY</div>
-          </td>
-        </tr>
-        <tr class="sub"><td colspan="3">
-          <ul>
-            <li>Generated reports on Excel using pivot tables to analyze datasets of <strong>4,000+ rows</strong>.</li>
-          </ul>
-        </td></tr>
-
-        <tr class="head">
-          <td class="time">2019-07</td>
-          <td><span class="badge int">INTERN</span></td>
-          <td class="expand-ind">
-            <div><span class="role">INTERN</span> <span class="at">@</span> <span class="co">VENDEFY LLC</span> · NEW YORK, NY</div>
-          </td>
-        </tr>
-        <tr class="sub"><td colspan="3">
-          <ul>
-            <li>Coordinated launch of beta test with 50 users for the company's e-commerce application.</li>
-          </ul>
-        </td></tr>
-
-        <tr class="head">
-          <td class="time">2019-08 → 2022-05</td>
-          <td><span class="badge hir">EDU</span></td>
-          <td class="expand-ind">
-            <div><span class="role">B.A. INTERDISCIPLINARY STATISTICS</span> <span class="at">@</span> <span class="co">UNIVERSITY OF VIRGINIA</span> · CHARLOTTESVILLE, VA</div>
-          </td>
-        </tr>
-        <tr class="sub"><td colspan="3">
-          <ul>
-            <li>Econometrics Concentration · Sales &amp; Trading Group · Coursework: Data Analysis with Python, Applied Calculus II.</li>
-          </ul>
-        </td></tr>
-      </tbody>
-    </table>
-  </section>
-
-  <!-- SKILLS -->
-  <section id="skills" data-screen-label="05 Skills">
-    <div class="sec-bar">
-      <div><span class="id">SKLS</span>CAPABILITIES MATRIX · SELF-RATED PROFICIENCY</div>
-      <div class="right">5 = EXPERT  ·  3 = WORKING  ·  2 = FAMILIAR</div>
-    </div>
-    <div class="skl-grid">
-      <div class="skl-cat">
-        <div class="skl-cat-head"><span>// 01 · AI &amp; AUTOMATION</span><span class="ct">06</span></div>
-        <div class="skl-list">
-          <div class="skl-row"><span class="name">Claude Code</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
-          <div class="skl-row"><span class="name">Claude AI (API)</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
-          <div class="skl-row"><span class="name">Prompt Engineering</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
-          <div class="skl-row"><span class="name">Cursor</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
-          <div class="skl-row"><span class="name">Claude Design</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
-          <div class="skl-row"><span class="name">ChatGPT</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
-        </div>
-      </div>
-      <div class="skl-cat">
-        <div class="skl-cat-head"><span>// 02 · ENTERPRISE SYSTEMS</span><span class="ct">05</span></div>
-        <div class="skl-list">
-          <div class="skl-row"><span class="name">Workday Financial Mgmt</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
-          <div class="skl-row"><span class="name">Workday HCM</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
-          <div class="skl-row"><span class="name">Workday Procurement</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
-          <div class="skl-row"><span class="name">SOAP WWS API</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
-          <div class="skl-row"><span class="name">Workday Studio</span><span class="bar lvl-3"><span class="fill"></span></span><span class="lbl">3/5</span></div>
-        </div>
-      </div>
-      <div class="skl-cat">
-        <div class="skl-cat-head"><span>// 03 · DEVELOPMENT</span><span class="ct">07</span></div>
-        <div class="skl-list">
-          <div class="skl-row"><span class="name">Node.js</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
-          <div class="skl-row"><span class="name">JavaScript</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
-          <div class="skl-row"><span class="name">HTML / CSS</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
-          <div class="skl-row"><span class="name">Python</span><span class="bar lvl-3"><span class="fill"></span></span><span class="lbl">3/5</span></div>
-          <div class="skl-row"><span class="name">REST &amp; SOAP APIs</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
-          <div class="skl-row"><span class="name">SQLite</span><span class="bar lvl-3"><span class="fill"></span></span><span class="lbl">3/5</span></div>
-          <div class="skl-row"><span class="name">PowerShell</span><span class="bar lvl-2"><span class="fill"></span></span><span class="lbl">2/5</span></div>
-        </div>
-      </div>
-      <div class="skl-cat">
-        <div class="skl-cat-head"><span>// 04 · DATA &amp; VIZ</span><span class="ct">06</span></div>
-        <div class="skl-list">
-          <div class="skl-row"><span class="name">Chart.js</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
-          <div class="skl-row"><span class="name">pandas</span><span class="bar lvl-3"><span class="fill"></span></span><span class="lbl">3/5</span></div>
-          <div class="skl-row"><span class="name">matplotlib</span><span class="bar lvl-3"><span class="fill"></span></span><span class="lbl">3/5</span></div>
-          <div class="skl-row"><span class="name">Excel · Pivot</span><span class="bar lvl-5"><span class="fill"></span></span><span class="lbl">5/5</span></div>
-          <div class="skl-row"><span class="name">pptxgenjs</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
-          <div class="skl-row"><span class="name">Postman</span><span class="bar lvl-4"><span class="fill"></span></span><span class="lbl">4/5</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-  <section id="contact" data-screen-label="06 Contact">
-    <div class="sec-bar">
-      <div><span class="id">CTC</span>CONTACT · DIRECT LINES</div>
-      <div class="right">RESPONSE SLA: 24H</div>
-    </div>
-    <div class="contact-grid">
-      <div>
-        <h3>// PRIMARY</h3>
-        <div class="line"><span class="k">EMAIL</span><span class="v"><a href="#" data-mail="jpjacobello+gmail.com" class="email-link">·</a></span></div>
-        <div class="line"><span class="k">PHONE</span><span class="v">908.472.9055</span></div>
-        <div class="line"><span class="k">BASED</span><span class="v">NEW YORK, NY</span></div>
-        <div class="line"><span class="k">TIMEZONE</span><span class="v">EST (UTC-5)</span></div>
-        <div class="actions">
-          <a href="#" data-mail="jpjacobello+gmail.com" class="btn email-link">▶ COMPOSE EMAIL</a>
-          <a href="tel:9084729055" class="btn">▶ CALL</a>
-          <a href="JP Jacobello Resume.pdf" download class="btn green">▶ DOWNLOAD RESUME</a>
-        </div>
-      </div>
-      <div>
-        <h3>// SEEKING</h3>
-        <div class="line"><span class="k">ROLES</span><span class="v">GTM · SOLUTION ENGINEERING · TECH CONSULTING · ENTERPRISE TOOLING</span></div>
-        <div class="line"><span class="k">START</span><span class="v" style="color:var(--green);">Q3 2026 ✓</span></div>
-        <div class="line"><span class="k">MODE</span><span class="v">HYBRID · NYC</span></div>
-        <div class="line"><span class="k">TOPICS</span><span class="v">WORKDAY INTEGRATIONS · CLAUDE PROTOTYPES · AI × FINANCE</span></div>
-        <p class="desc-text" style="margin-top:14px;font-size:11px;color:var(--gray);">
-          Got a system that should be smarter? Open to chat about the intersection of AI and enterprise systems — particularly anywhere humans are doing rote work an LLM could do better.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- COMMAND LINE -->
-  <div class="cmdline">
-    <span class="prompt">JPJ&gt;</span>
-    <input id="cmd" type="text" autocomplete="off" spellcheck="false" placeholder="type a function code (HDR · DES · WORK · EXP · SKLS · CTC)" />
-    <span class="blink"></span>
-    <span class="help">PRESS <b>F1</b>–<b>F6</b></span>
   </div>
 
-  <!-- TICKER -->
-  <div class="ticker">
-    <div class="ticker-track" id="ticker">
-      <!-- duplicated content for seamless loop -->
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-group">
+      <div class="sidebar-title">Favorites</div>
+      <div class="sidebar-item active" data-view="about">
+        <svg class="ico" viewBox="0 0 24 24" fill="#0a84ff"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6v1H4v-1z"/></svg>
+        <span class="label">About.md</span>
+      </div>
+      <div class="sidebar-item" data-view="work">
+        <svg class="ico" viewBox="0 0 24 24" fill="#ff9500"><path d="M3 7h7l2 2h9v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7z"/></svg>
+        <span class="label">Projects</span>
+        <span class="badge">4</span>
+      </div>
+      <div class="sidebar-item" data-view="experience">
+        <svg class="ico" viewBox="0 0 24 24" fill="#34c759"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" fill="none" stroke="#34c759" stroke-width="2"/></svg>
+        <span class="label">Experience.json</span>
+      </div>
+      <div class="sidebar-item" data-view="skills">
+        <svg class="ico" viewBox="0 0 24 24" fill="#bf5af2"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8 5.8 21.3l2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+        <span class="label">Skills.app</span>
+      </div>
+      <div class="sidebar-item" data-view="contact">
+        <svg class="ico" viewBox="0 0 24 24" fill="#5e5ce6"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8l10 6 10-6" fill="none" stroke="white" stroke-width="2"/></svg>
+        <span class="label">Contact.vcf</span>
+      </div>
     </div>
+    <div class="sidebar-group">
+      <div class="sidebar-title">Documents</div>
+      <div class="sidebar-item" data-view="resume">
+        <svg class="ico" viewBox="0 0 24 24" fill="#ff453a"><path d="M6 2h9l5 5v15H6V2z"/><path d="M15 2v5h5" fill="none" stroke="white" stroke-width="2"/></svg>
+        <span class="label">Resume.pdf</span>
+      </div>
+    </div>
+    <div class="sidebar-group">
+      <div class="sidebar-title">Tags</div>
+      <div class="sidebar-item">
+        <span class="ico" style="background:#0a84ff;width:10px;height:10px;border-radius:50%;margin-left:4px;margin-right:11px;"></span>
+        <span class="label">AI · Enterprise</span>
+      </div>
+      <div class="sidebar-item">
+        <span class="ico" style="background:#34c759;width:10px;height:10px;border-radius:50%;margin-left:4px;margin-right:11px;"></span>
+        <span class="label">Available Q3 2026</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main pane -->
+  <main class="main">
+
+    <!-- ABOUT -->
+    <section class="view active" id="view-about" data-screen-label="01 About">
+      <div class="doc">
+        <div class="doc-header">
+          <div class="doc-icon"></div>
+          <div class="meta">
+            <div class="filename">~/About.md · Last modified: Today, 10:42 AM</div>
+            <h1>JP Jacobello</h1>
+            <div class="role"><strong>Sr. Analyst</strong> · Accenture Technology · New York, NY</div>
+          </div>
+        </div>
+
+        <p><strong>Technology Sr. Analyst at Accenture</strong> with 3+ years building enterprise systems for Fortune 500 clients. I work at the intersection of AI and enterprise finance, using Claude AI and live Workday APIs to ship tools that non-technical users can actually run.</p>
+
+        <p>Most useful where business stakeholders meet engineering teams, turning ambiguous finance, HR, and procurement requirements into <em>shipped tools</em>, not slide-deck recommendations.</p>
+
+        <h2>Quick Reference</h2>
+        <div class="info-card">
+          <div class="row"><div class="k">Role</div><div class="v">Sr. Analyst</div></div>
+          <div class="row"><div class="k">Team</div><div class="v">Accenture Technology</div></div>
+          <div class="row"><div class="k">Focus</div><div class="v">AI × Enterprise Finance</div></div>
+          <div class="row"><div class="k">Based</div><div class="v">New York, NY</div></div>
+          <div class="row"><div class="k">Education</div><div class="v">UVA · Statistics / Econometrics</div></div>
+          <div class="row"><div class="k">Stack</div><div class="v">Node · Claude · Workday WWS</div></div>
+          <div class="row"><div class="k">Seeking</div><div class="v">GTM · SE · Tech Consulting · Tooling</div></div>
+          <div class="row"><div class="k">Available</div><div class="v green">Q3 2026 ✓</div></div>
+        </div>
+
+        <div class="doc-actions">
+          <a href="JP Jacobello Resume.pdf" download class="btn btn-primary">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Resume
+          </a>
+          <a href="#" data-mail="jpjacobello+gmail.com" class="btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8l10 6 10-6"/></svg>
+            <span class="email-label">Send Email</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORK -->
+    <section class="view" id="view-work" data-screen-label="02 Projects">
+      <div class="pane-header">
+        <div>
+          <h2>Projects</h2>
+          <div class="subtitle">4 items · Built with Claude Code + live enterprise APIs</div>
+        </div>
+        <div class="view-toggle">
+          <button class="active">Icons</button>
+          <button>List</button>
+          <button>Column</button>
+        </div>
+      </div>
+
+      <div class="proj-grid" id="proj-grid">
+        <div class="proj-tile selected" data-proj="acnt">
+          <div class="proj-icon acnt">AA<div class="badge">★</div></div>
+          <div class="name">Accounting Assistant</div>
+          <div class="meta">Featured · 2025</div>
+        </div>
+        <div class="proj-tile" data-proj="anlz">
+          <div class="proj-icon anlz">990</div>
+          <div class="name">990 Nonprofit Analyzer</div>
+          <div class="meta">728K orgs · 2025</div>
+        </div>
+        <div class="proj-tile" data-proj="cfg">
+          <div class="proj-icon cfg">CFG</div>
+          <div class="name">Configuration Load Tool</div>
+          <div class="meta">E2E pipeline · 2025</div>
+        </div>
+        <div class="proj-tile" data-proj="divi">
+          <div class="proj-icon divi">Di</div>
+          <div class="name">Divi: Bill Splitter</div>
+          <div class="meta">iOS · TestFlight</div>
+        </div>
+      </div>
+
+      <div class="proj-detail" id="proj-detail">
+        <!-- populated by JS -->
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section class="view" id="view-experience" data-screen-label="03 Experience">
+      <div class="pane-header">
+        <div>
+          <h2>Experience</h2>
+          <div class="subtitle">5 entries · 2019 to Present</div>
+        </div>
+      </div>
+      <ul class="exp-list">
+        <li class="exp-item">
+          <div class="exp-date">
+            Dec 2024 to Now
+            <div class="current">Current</div>
+          </div>
+          <div>
+            <h3 class="exp-role">Technology Sr. Analyst</h3>
+            <div class="exp-co"><span class="at">@</span> Accenture · New York, NY</div>
+            <ul class="exp-bullets">
+              <li>Designed enterprise financial and procurement systems for Fortune 500 clients, automating workflows for <strong>1,200+ users</strong>.</li>
+              <li>Built AI analytics applications using LLMs and live APIs, enabling natural-language queries on financial data.</li>
+              <li>Presented AI prototype to <strong>60+ senior leaders</strong> as a potential client-facing offering.</li>
+              <li>Primary liaison to C-suite stakeholders; led weekly status reviews.</li>
+            </ul>
+          </div>
+        </li>
+        <li class="exp-item">
+          <div class="exp-date">Sep 2022 to Dec 2024</div>
+          <div>
+            <h3 class="exp-role">Technology Analyst</h3>
+            <div class="exp-co"><span class="at">@</span> Accenture · New York, NY</div>
+            <ul class="exp-bullets">
+              <li>Recognized with <strong>Accenture WOW Award (top 1%)</strong> for innovation and collaboration.</li>
+              <li>Supported on-site Workday launch and change management for a public healthcare org.</li>
+              <li>Led Projects and Budgets workstreams for a large insurance client.</li>
+              <li>Solutioned <strong>300+ defects</strong> in a single implementation.</li>
+            </ul>
+          </div>
+        </li>
+        <li class="exp-item">
+          <div class="exp-date">Aug 2019 to May 2022</div>
+          <div>
+            <h3 class="exp-role">B.A. Interdisciplinary Statistics</h3>
+            <div class="exp-co"><span class="at">@</span> University of Virginia · Charlottesville, VA</div>
+            <ul class="exp-bullets">
+              <li>Econometrics concentration · Sales &amp; Trading Group · Data Analysis with Python.</li>
+            </ul>
+          </div>
+        </li>
+        <li class="exp-item">
+          <div class="exp-date">Jul 2021</div>
+          <div>
+            <h3 class="exp-role">Data Analyst Intern</h3>
+            <div class="exp-co"><span class="at">@</span> Keswick Vineyards · Keswick, VA</div>
+            <ul class="exp-bullets">
+              <li>Analyzed survey data from <strong>1,000+ wine-club members</strong>; new strategy increased margins by <strong>30%</strong>.</li>
+            </ul>
+          </div>
+        </li>
+        <li class="exp-item">
+          <div class="exp-date">Jul to Aug 2020</div>
+          <div>
+            <h3 class="exp-role">Client Service Admin Intern</h3>
+            <div class="exp-co"><span class="at">@</span> Ehrenkranz Partners · New York, NY</div>
+            <ul class="exp-bullets">
+              <li>Generated Excel pivot-table reports on datasets of 4,000+ rows.</li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- SKILLS -->
+    <section class="view" id="view-skills" data-screen-label="04 Skills">
+      <div class="pane-header">
+        <div>
+          <h2>Skills</h2>
+          <div class="subtitle">Tools and systems I use regularly</div>
+        </div>
+      </div>
+      <div class="skills-pane">
+
+        <div class="skills-cat">
+          <div class="skills-cat-name">AI &amp; Automation <span class="ct">7 items</span></div>
+          <div class="skills-rows">
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Claude Code</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Claude Design</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">ChatGPT</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Cursor</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Prompt Engineering</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Notion</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Postman</div></div>
+          </div>
+        </div>
+
+        <div class="skills-cat">
+          <div class="skills-cat-name">Enterprise Systems <span class="ct">5 items</span></div>
+          <div class="skills-rows">
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Workday Financial Management</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Workday HCM</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Workday Procurement</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Workday Studio</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">SOAP WWS API</div></div>
+          </div>
+        </div>
+
+        <div class="skills-cat">
+          <div class="skills-cat-name">Development <span class="ct">6 items</span></div>
+          <div class="skills-rows">
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Node.js</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">JavaScript</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">HTML / CSS</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">REST &amp; SOAP APIs</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Chart.js</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Python</div></div>
+          </div>
+        </div>
+
+        <div class="skills-cat">
+          <div class="skills-cat-name">Python Capabilities <span class="ct">5 items</span></div>
+          <div class="skills-rows">
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Data visualization</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Time series data</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Data storage</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Data cleaning</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Merging &amp; transformation</div></div>
+          </div>
+        </div>
+
+        <div class="skills-cat">
+          <div class="skills-cat-name">Microsoft Office <span class="ct">2 items</span></div>
+          <div class="skills-rows">
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">Excel</div></div>
+            <div class="skill-row"><span class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="name">PowerPoint</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="view" id="view-contact" data-screen-label="05 Contact">
+      <div class="vcard">
+        <div class="vcard-banner"></div>
+        <div class="vcard-body">
+          <div class="vcard-avatar"></div>
+          <h2>JP Jacobello</h2>
+          <div class="role">Sr. Analyst · Accenture Technology</div>
+          <div class="vcard-fields">
+            <div class="vcard-field">
+              <div class="k">email</div>
+              <div class="v"><a href="#" data-mail="jpjacobello+gmail.com" class="email-link">·</a></div>
+            </div>
+            <div class="vcard-field">
+              <div class="k">phone</div>
+              <div class="v"><a href="tel:9084729055">908.472.9055</a></div>
+            </div>
+            <div class="vcard-field">
+              <div class="k">location</div>
+              <div class="v">New York, NY · EST</div>
+            </div>
+            <div class="vcard-field">
+              <div class="k">seeking</div>
+              <div class="v" style="font-size:12px;color:var(--text-2);">GTM · Solution Engineering · Tech Consulting · Enterprise Tooling</div>
+            </div>
+            <div class="vcard-field">
+              <div class="k">available</div>
+              <div class="v" style="color:var(--green);">Q3 2026 ✓</div>
+            </div>
+          </div>
+          <div class="doc-actions" style="margin-top:24px;">
+            <a href="#" data-mail="jpjacobello+gmail.com" class="btn btn-primary email-link" style="flex:1;justify-content:center;">Compose Email</a>
+            <a href="JP Jacobello Resume.pdf" download class="btn">Save Resume</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESUME -->
+    <section class="view" id="view-resume" data-screen-label="06 Resume">
+      <div class="pdf-preview">
+        <div class="pdf-paper">
+          <h1>JP Jacobello</h1>
+          <div class="pdf-role">Technology Sr. Analyst · Accenture</div>
+          <div class="pdf-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ddb7adb7bcbeb2bfb8b1b1b29dbab0bcb4b1f3beb2b0">[email&#160;protected]</a> · 908.472.9055 · New York, NY</div>
+          <h2>Experience</h2>
+          <div class="pdf-line"><b>Technology Sr. Analyst</b>, Accenture · Dec 2024 to Present</div>
+          <div class="pdf-line">Built AI analytics applications used by 1,200+ users; presented to 60+ senior leaders.</div>
+          <div class="pdf-line"><b>Technology Analyst</b>, Accenture · Sep 2022 to Dec 2024</div>
+          <div class="pdf-line">WOW Award (top 1%); led Projects &amp; Budgets workstreams; solutioned 300+ defects.</div>
+          <h2>Education</h2>
+          <div class="pdf-line"><b>University of Virginia</b> · B.A. Statistics (Econometrics) · 2019–2022</div>
+          <h2>Selected Projects</h2>
+          <div class="pdf-line">Accenture Accounting Assistant · 990 Analyzer · Configuration Load Tool · Divi</div>
+        </div>
+        <p style="font-size:13px;color:var(--text-2);margin-bottom:18px;">Quick Look preview · 1 page · 124 KB · PDF</p>
+        <a href="JP Jacobello Resume.pdf" download class="btn btn-primary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download PDF
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Status bar -->
+  <div class="status">
+    <span id="status-text">1 of 6 selected · 124 KB available</span>
+    <span>Last modified: Today, 10:42 AM</span>
   </div>
 
 </div>
 
-<script>
-  // ===== Clock =====
-  function pad(n) { return n.toString().padStart(2, '0'); }
-  const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-  function tick() {
-    const d = new Date();
-    document.getElementById('clk-time').textContent =
-      pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
-    document.getElementById('clk-date').textContent =
-      days[d.getDay()] + ' ' + pad(d.getDate()) + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
-  }
-  tick(); setInterval(tick, 1000);
+<!-- Version switcher -->
+<nav class="versions">
+  <a href="portfolio.html"><span class="ico v1">v1</span>Card</a>
+  <a href="terminal.html"><span class="ico v2">v2</span>Terminal</a>
+  <a href="desktop.html" class="active"><span class="ico v3">v3</span>Desktop</a>
+  <a href="notion.html"><span class="ico v4">v4</span>Notion</a>
+</nav>
 
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // ===== Email obfuscation bypass =====
   (function () {
     const decode = (s) => s.replace('+', '@');
     document.querySelectorAll('[data-mail]').forEach(a => {
       const addr = decode(a.dataset.mail);
       a.setAttribute('href', 'mailto:' + addr);
-      // any inner text node containing "·" gets replaced with the addr
-      a.querySelectorAll('*').forEach(c => { /* no-op */ });
-      // direct text replacement for elements showing the placeholder
-      if (a.classList.contains('email-link') && a.textContent.trim() === '·') {
-        a.textContent = addr;
-      } else if (a.classList.contains('email-link')) {
-        // contact button keeps its own label
-      }
-    });
-    // override placeholder · in lines explicitly
-    document.querySelectorAll('a.email-link').forEach(a => {
-      if (a.textContent.trim() === '·' || a.textContent.trim() === '') {
-        a.textContent = decode(a.dataset.mail);
-      }
+      const inner = a.textContent.trim();
+      if (inner === '·' || inner === '') a.textContent = addr;
     });
   })();
 
-  // ===== Function key navigation =====
-  const fnkeys = document.querySelectorAll('.fnkey');
-  const sections = {
-    ident: document.getElementById('ident'),
-    desc: document.getElementById('desc'),
-    work: document.getElementById('work'),
-    exp: document.getElementById('exp'),
-    skills: document.getElementById('skills'),
-    contact: document.getElementById('contact')
+  // ===== View routing =====
+  const sidebarItems = document.querySelectorAll('.sidebar-item[data-view]');
+  const views = document.querySelectorAll('.view');
+  const crumb = document.getElementById('crumb-current');
+  const status = document.getElementById('status-text');
+  const filenames = {
+    about: 'About.md',
+    work: 'Projects',
+    experience: 'Experience.json',
+    skills: 'Skills.app',
+    contact: 'Contact.vcf',
+    resume: 'Resume.pdf'
   };
-  function activateKey(tgt) {
-    fnkeys.forEach(k => k.classList.toggle('active', k.dataset.tgt === tgt));
-    if (sections[tgt]) {
-      window.scrollTo({ top: sections[tgt].offsetTop - 60, behavior: 'smooth' });
-    }
+  const statusText = {
+    about: '1 item · About.md · 4 KB',
+    work: '4 items · Projects/ · 18 MB',
+    experience: '1 item · Experience.json · 8 KB',
+    skills: '1 item · Skills.app · 12 MB',
+    contact: '1 item · Contact.vcf · 2 KB',
+    resume: '1 item · Resume.pdf · 124 KB'
+  };
+  function showView(name) {
+    sidebarItems.forEach(i => i.classList.toggle('active', i.dataset.view === name));
+    views.forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+    crumb.textContent = filenames[name];
+    status.textContent = statusText[name];
+    document.querySelector('.main').scrollTop = 0;
   }
-  fnkeys.forEach(k => k.addEventListener('click', () => activateKey(k.dataset.tgt)));
+  sidebarItems.forEach(i => i.addEventListener('click', () => showView(i.dataset.view)));
 
-  // Sync function keys with scroll position
-  const sectionList = ['ident','desc','work','exp','skills','contact'];
-  function syncScroll() {
-    const y = window.scrollY + 120;
-    let active = 'ident';
-    for (const id of sectionList) {
-      if (sections[id] && sections[id].offsetTop <= y) active = id;
-    }
-    fnkeys.forEach(k => k.classList.toggle('active', k.dataset.tgt === active));
-  }
-  window.addEventListener('scroll', syncScroll, { passive: true });
-
-  // Keyboard F1-F6
-  window.addEventListener('keydown', (e) => {
-    const map = { F1:'ident', F2:'desc', F3:'work', F4:'exp', F5:'skills', F6:'contact' };
-    if (map[e.key]) {
-      e.preventDefault();
-      activateKey(map[e.key]);
-    }
-  });
-
-  // ===== Wire expand =====
-  document.querySelectorAll('.wire tr.head:not(.always-on)').forEach(h => {
-    h.addEventListener('click', () => h.classList.toggle('expanded'));
-  });
-
-  // ===== Watchlist row expand =====
-  const wlBody = document.getElementById('wl-body');
-  const projectDetails = {
-    '01': {
-      desc: '<strong>Full-stack financial analytics dashboard</strong> with a live Workday Financial Management connection via SOAP API. Built to replace manual journal export and analysis workflows.',
+  // ===== Projects detail ======
+  const projectData = {
+    acnt: {
+      name: 'Accenture Accounting Assistant', icon: 'AA', cls: 'acnt',
+      tagline: 'Live Workday journal analytics + Claude AI · Featured project',
+      featured: true,
+      meta: { Type: 'Enterprise AI · Web App', Stack: 'Node.js + Claude + Workday SOAP', Status: 'Presented to 60+ senior leaders', Year: '2025' },
+      desc: 'A full-stack financial analytics dashboard with a live connection to Workday Financial Management via SOAP API. Built to replace manual journal export and analysis workflows for enterprise finance teams.',
       features: [
-        '<strong>Live journal data</strong> filtered by company, date, cost center',
-        '<strong>Grounded AI chat</strong> — Claude responds only on the fetched dataset',
-        'Direct journal creation w/ debit/credit validation',
-        'Executive Dashboard w/ AI-narrated KPI cards',
-        'One-click PowerPoint export for leadership reporting',
-        'Presented to <strong>60+ senior leaders</strong> as a client offering'
+        '<strong>Live journal data</strong>, fetched from Workday, filtered by company, date, cost center',
+        '<strong>Grounded AI chat</strong> that responds only on fetched data; says "I don\'t know" when uncertain',
+        '<strong>Direct journal creation</strong> with debit/credit validation and AI-assisted reclassification',
+        '<strong>Executive Dashboard</strong> with AI-narrated KPI cards and one-click PowerPoint export'
       ],
-      stack: ['Node.js','Workday SOAP WWS v42','Claude AI','Chart.js','pptxgenjs','Canvas Design System']
+      stack: ['Node.js','Workday SOAP WWS v42','Claude AI','Chart.js','pptxgenjs','Canvas DS']
     },
-    '02': {
-      desc: 'Research-grade analytics platform built on <strong>728,719 IRS Form 990 filings</strong> — designed to replace a client\'s PowerBI tool with richer data and AI-powered context.',
+    anlz: {
+      name: '990 Nonprofit Financial Analyzer', icon: '990', cls: 'anlz',
+      tagline: '728,719 IRS Form 990 filings · Replaces client PowerBI tool',
+      meta: { Type: 'Data Platform · Research', Stack: 'Node + Python + SQLite', Status: 'Active', Year: '2025' },
+      desc: 'Research-grade analytics platform built on 728,719 IRS Form 990 filings, designed to replace a client\'s PowerBI tool with richer data and AI-powered context.',
       features: [
-        'Full-text search w/ expandable org panels',
-        'Balance sheet · revenue/expense · 9-yr history · peer compare',
-        '<strong>Spotlight</strong> — Claude surfaces named org snapshots in chat',
-        'World Bank income-group context for healthcare/oncology orgs',
-        'Pipeline: Python → SQLite (728k rows in ~15 min build)',
-        'No Python at runtime · static SQLite at the edge'
+        'Full-text search with expandable org panels: balance sheet, revenue/expense, 9-year history, peer comparison',
+        '<strong>Spotlight</strong>: Claude identifies named orgs in chat and surfaces a financial snapshot automatically',
+        'Global context layer cites <strong>World Bank income-group data</strong> for healthcare and oncology orgs',
+        'Pipeline: Python reads IRS bulk ZIPs → SQLite (728k rows, ~15 min build); no Python at runtime'
       ],
       stack: ['Node.js','Python','SQLite','ProPublica API','World Bank API','FRED','Chart.js']
     },
-    '03': {
-      desc: 'Claude-driven tool for mass-loading enterprise configuration. Claude generates structured XLSX from natural language; server forwards through a <strong>full e2e pipeline</strong>.',
+    cfg: {
+      name: 'Configuration Load Tool', icon: 'CFG', cls: 'cfg',
+      tagline: 'Claude → XLSX → e2e config-load pipeline · Replaces Playwright automation',
+      meta: { Type: 'Enterprise Automation', Stack: 'Node + Claude + OAuth', Status: 'Active', Year: '2025' },
+      desc: 'Claude-driven tool for mass-loading Customer Central configuration. Claude generates structured XLSX from natural-language input; the server forwards through a full end-to-end pipeline.',
       features: [
-        'File upload → load set creation → import',
-        'Load initiation → event polling → error retrieval',
-        'Replaces a manual <strong>Playwright automation</strong>',
-        'Conversational interface for non-technical consultants',
-        'OAuth 2.0 token refresh on the server side',
-        'XLSX generation directly from prompt'
+        'File upload → load set creation → import → load initiation → event polling → error retrieval',
+        'Replaces a manual <strong>Playwright-based automation</strong> with a conversational interface',
+        'OAuth 2.0 token refresh handled server-side',
+        'Non-technical consultants can run the entire flow'
       ],
       stack: ['Node.js','CC Advanced Load API','OAuth 2.0','Claude AI','xlsx']
     },
-    '04': {
-      desc: '<strong>Divi</strong> is an iOS app that ends the awkward math at the end of a meal. Snap the receipt, assign each line item to whoever ordered it, and Divi sends a pre-filled <strong>Venmo charge</strong> to everyone at the table &mdash; <strong>under a minute</strong>.',
+    divi: {
+      name: 'Divi: Bill Splitter', icon: 'Di', cls: 'divi',
+      tagline: 'iOS app · Snap receipt, assign items, send Venmo charges in under 60s',
+      meta: { Type: 'Mobile · Consumer', Stack: 'React Native + GPT-4o', Status: 'TestFlight', Year: '2025' },
+      desc: 'An iOS app that ends the awkward math at the end of a meal. Snap the receipt, assign each line item to whoever ordered it, and Divi sends a pre-filled Venmo charge to everyone at the table in under a minute.',
       features: [
-        'GPT-4o vision parses every line item, qty, tax, tip, fees',
-        'Tap-to-assign UI &mdash; unassigned items highlighted',
-        'Tax &amp; tip distribute proportionally by subtotal share',
-        'Venmo deep-link with itemized note ("Tuna Tataki $18, ...")',
-        'Pro tier: bill history, saved groups, watermark removal',
-        'Splits by what people actually ordered &mdash; not equally'
+        '<strong>GPT-4o vision</strong> parses every line item, quantity, tax, tip, and fees',
+        '<strong>Tap-to-assign</strong> with unassigned-item highlighting; tax/tip distribute proportionally',
+        'Venmo deep-link sends an itemized note ("Tuna Tataki $18, Rock Shrimp Tempura $22")',
+        'Pro tier: bill history, saved groups, watermark removal via StoreKit IAP'
       ],
-      stack: ['React Native','Expo','GPT-4o Vision','Zustand','Venmo Deep-Link','TestFlight']
+      stack: ['React Native','Expo / EAS','GPT-4o Vision','Zustand','Venmo Deep-Link','TestFlight']
     }
   };
 
-  wlBody.addEventListener('click', (e) => {
-    const tr = e.target.closest('tr[data-row]');
-    if (!tr) return;
-    const id = tr.dataset.row;
-    const next = tr.nextElementSibling;
-    if (next && next.classList.contains('expand-row') && next.dataset.for === id) {
-      next.remove();
-      tr.classList.remove('expanded');
-      return;
-    }
-    // close any open
-    document.querySelectorAll('.expand-row').forEach(r => r.remove());
-    document.querySelectorAll('tr.expanded').forEach(r => r.classList.remove('expanded'));
-
-    const d = projectDetails[id];
-    const exp = document.createElement('tr');
-    exp.className = 'expand-row';
-    exp.dataset.for = id;
-    exp.innerHTML = `
-      <td colspan="7">
-        <div class="desc">${d.desc}</div>
-        <ul class="features">${d.features.map(f => `<li>${f}</li>`).join('')}</ul>
-        <div class="stack-row">${d.stack.map(s => `<span class="pill">${s}</span>`).join('')}</div>
-      </td>`;
-    tr.classList.add('expanded');
-    tr.parentNode.insertBefore(exp, tr.nextSibling);
-  });
-
-  // ===== Ticker =====
-  const tickerData = [
-    { sym: 'AVAIL', val: 'Q3 2026', dir: 'up', delta: '▲ OPEN' },
-    { sym: 'PROJ', val: '5 SHIPPED', dir: 'up', delta: '▲ +1 YTD' },
-    { sym: 'USERS', val: '1,200', dir: 'up', delta: '▲ +180' },
-    { sym: 'STACK', val: 'NODE+CLAUDE+WWS', dir: '', delta: '' },
-    { sym: 'EXP', val: '3.5Y ACN', dir: 'up', delta: '▲ SR' },
-    { sym: 'AWARDS', val: 'WOW · TOP 1%', dir: 'up', delta: '★' },
-    { sym: 'EDU', val: 'UVA STATS', dir: '', delta: '' },
-    { sym: 'CCY', val: 'USD', dir: '', delta: '' },
-    { sym: 'TZ', val: 'EST UTC-5', dir: '', delta: '' },
-    { sym: 'DEFECTS', val: '300+ RESOLVED', dir: 'up', delta: '▲' },
-    { sym: 'CLIENTS', val: 'F500', dir: '', delta: '' },
-    { sym: 'NEW', val: 'AI × ENTERPRISE FINANCE', dir: 'up', delta: '★' }
-  ];
-  function buildTicker() {
-    const trk = document.getElementById('ticker');
-    const html = tickerData.map(t => {
-      const cls = t.dir === 'up' ? 'up' : t.dir === 'dn' ? 'dn' : '';
-      return `<span class="tk"><span class="sym">${t.sym}</span>${t.val} <span class="${cls}">${t.delta}</span></span>`;
-    }).join('');
-    trk.innerHTML = html + html; // double for loop
+  function renderProj(key) {
+    const p = projectData[key];
+    if (!p) return;
+    const detail = document.getElementById('proj-detail');
+    detail.innerHTML = `
+      <div class="proj-detail-header">
+        <div class="picon proj-icon ${p.cls}" style="width:60px;height:60px;border-radius:14px;font-size:22px;">${p.icon}</div>
+        <div style="min-width:0;flex:1;">
+          <h3>${p.name}</h3>
+          <div class="tagline">${p.tagline}</div>
+        </div>
+        ${p.featured ? '<div class="featured-pill">★ Featured</div>' : ''}
+      </div>
+      <div class="proj-detail-body">
+        <p>${p.desc}</p>
+        <div class="proj-meta-grid">
+          ${Object.entries(p.meta).map(([k,v]) => `<div class="k">${k}</div><div class="v">${v}</div>`).join('')}
+        </div>
+        <ul class="features-list">
+          ${p.features.map(f => `<li><span>${f}</span></li>`).join('')}
+        </ul>
+        <div class="tech-row">
+          ${p.stack.map(s => `<span class="tech-pill">${s}</span>`).join('')}
+        </div>
+      </div>`;
   }
-  buildTicker();
-
-  // ===== Command line =====
-  const cmd = document.getElementById('cmd');
-  const cmdMap = {
-    HDR: 'ident', HEADER: 'ident', HOME: 'ident',
-    DES: 'desc', DESC: 'desc', ABOUT: 'desc',
-    WORK: 'work', WLST: 'work', PROJECTS: 'work',
-    EXP: 'exp', WIRE: 'exp', EXPERIENCE: 'exp',
-    SKLS: 'skills', SKILLS: 'skills',
-    CTC: 'contact', CONTACT: 'contact',
-    GO: 'ident'
-  };
-  function cmdHelp() {
-    cmd.value = '';
-    cmd.placeholder = 'COMMANDS: HDR · DES · WORK · EXP · SKLS · CTC · GO';
-    setTimeout(() => { cmd.placeholder = 'type a function code (HDR · DES · WORK · EXP · SKLS · CTC)'; }, 5000);
-  }
-  cmd.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const v = cmd.value.trim().toUpperCase();
-      const tgt = cmdMap[v];
-      if (tgt) {
-        activateKey(tgt);
-        cmd.value = '';
-      } else if (v) {
-        cmd.value = '';
-        cmd.placeholder = 'UNKNOWN CMD: "' + v + '" — TRY HDR · DES · WORK · EXP · SKLS · CTC';
-        setTimeout(() => { cmd.placeholder = 'type a function code (HDR · DES · WORK · EXP · SKLS · CTC)'; }, 2400);
-      }
-    }
+  document.querySelectorAll('.proj-tile').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.proj-tile').forEach(x => x.classList.remove('selected'));
+      t.classList.add('selected');
+      renderProj(t.dataset.proj);
+    });
   });
+  renderProj('acnt');
 
-  // Init
-  syncScroll();
+  // ===== Menu clock =====
+  function tickClock() {
+    const d = new Date();
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    let h = d.getHours(); const ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+    const m = d.getMinutes().toString().padStart(2,'0');
+    document.getElementById('menu-clock').textContent =
+      `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${h}:${m} ${ampm}`;
+  }
+  tickClock(); setInterval(tickClock, 30000);
 </script>
-
 </body>
 </html>
