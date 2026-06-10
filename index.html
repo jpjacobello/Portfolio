@@ -778,47 +778,6 @@
   .pdf-paper .pdf-line { font-size: 9px; line-height: 1.4; color: var(--text-2); margin-bottom: 6px; }
   .pdf-paper .pdf-line b { color: var(--text); font-weight: 600; }
 
-  /* Version switcher dock at bottom */
-  .versions {
-    position: fixed;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 60;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 8px 8px;
-    background: rgba(60, 60, 67, 0.7);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 0 0 0.5px rgba(255,255,255,0.2);
-  }
-  .versions a {
-    display: flex; align-items: center; gap: 6px;
-    padding: 6px 12px;
-    border-radius: 10px;
-    color: rgba(255,255,255,0.85);
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: 500;
-    transition: all 0.15s;
-  }
-  .versions a:hover { background: rgba(255,255,255,0.1); color: white; }
-  .versions a.active { background: rgba(255,255,255,0.2); color: white; }
-  .versions a .ico {
-    width: 18px; height: 18px;
-    border-radius: 5px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px; font-weight: 700;
-    flex-shrink: 0;
-  }
-  .versions a .ico.v1 { background: linear-gradient(160deg, #5e5ce6, #0a84ff); color: white; }
-  .versions a .ico.v2 { background: #000; color: #ffa31a; font-family: ui-monospace, monospace; }
-  .versions a .ico.v3 { background: linear-gradient(160deg, #f6f6f8, #d1d1d6); color: var(--text); border: 0.5px solid rgba(0,0,0,0.1); }
-  .versions a .ico.v4 { background: #fbf9f4; color: var(--text); border: 0.5px solid rgba(0,0,0,0.1); }
-
   /* Mobile */
   @media (max-width: 900px) {
     body { overflow: auto; height: auto; min-height: 100vh; }
@@ -852,8 +811,7 @@
     .exp-item { grid-template-columns: 1fr; gap: 8px; }
     .pane-header { padding: 18px 20px 14px; }
     .pdf-paper { transform: scale(0.85); }
-    .versions { bottom: 8px; }
-    .versions a { padding: 6px 8px; font-size: 11px; }
+
   }
 </style>
 </head>
@@ -1249,13 +1207,6 @@
 
 </div>
 
-<!-- Version switcher -->
-<nav class="versions">
-  <a href="portfolio.html"><span class="ico v1">v1</span>Card</a>
-  <a href="terminal.html"><span class="ico v2">v2</span>Terminal</a>
-  <a href="desktop.html" class="active"><span class="ico v3">v3</span>Desktop</a>
-  <a href="notion.html"><span class="ico v4">v4</span>Notion</a>
-</nav>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // ===== Email obfuscation bypass =====
