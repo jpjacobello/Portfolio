@@ -738,38 +738,168 @@
 
 
   /* Mobile */
-  @media (max-width: 900px) {
-    body { overflow: auto; height: auto; min-height: 100vh; }
+  @media (max-width: 768px) {
+    body {
+      overflow: hidden;
+      height: 100%;
+      height: 100dvh;
+      background-attachment: scroll;
+    }
+
+    /* Hide macOS menubar — irrelevant on phone */
+    .menubar { display: none; }
+
+    /* Window fills entire screen */
     .window {
-      position: relative;
-      top: auto; left: 0; right: 0; bottom: auto;
-      margin: 12px;
-      border-radius: 10px;
-      height: auto;
-      min-height: calc(100vh - 110px);
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      margin: 0;
+      border-radius: 0;
+      box-shadow: none;
       grid-template-columns: 1fr;
-      grid-template-rows: auto auto 1fr auto;
+      grid-template-rows: 52px 1fr 0;
       grid-template-areas:
         "chrome"
-        "sidebar"
         "main"
         "status";
+      max-width: 100%;
     }
-    .sidebar {
-      border-right: 0;
-      border-bottom: 1px solid var(--line);
-      max-height: 200px;
-    }
-    .doc { padding: 32px 24px; }
-    .doc-header { flex-direction: column; align-items: flex-start; }
-    .doc-header h1 { font-size: 28px; }
-    .info-card { grid-template-columns: 1fr; gap: 10px; }
-    .proj-grid { padding: 16px; }
-    .proj-detail { margin: 0 16px 24px; }
-    .exp-list, .skills-pane { padding: 18px 20px; }
-    .exp-item { grid-template-columns: 1fr; gap: 8px; }
-    .pane-header { padding: 18px 20px 14px; }
 
+    /* Simplified chrome — just show current view name */
+    .chrome {
+      padding: 0 16px;
+      padding-top: env(safe-area-inset-top, 0px);
+      height: auto;
+      min-height: 52px;
+    }
+    .traffic { display: none; }
+    .chrome .nav-arrows { display: none; }
+    .chrome .actions { display: none; }
+    .chrome .path {
+      font-size: 15px;
+      font-weight: 700;
+      justify-content: flex-start;
+    }
+    .chrome .path .crumb { display: none; }
+    .chrome .path .sep { display: none; }
+
+    /* Sidebar → fixed bottom tab bar */
+    .sidebar {
+      display: flex;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: calc(56px + env(safe-area-inset-bottom, 0px));
+      padding: 0 0 env(safe-area-inset-bottom, 0px);
+      background: rgba(246, 246, 248, 0.92);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border-top: 0.5px solid var(--line-2);
+      border-right: 0;
+      overflow: visible;
+      z-index: 40;
+      grid-area: unset;
+      flex-direction: row;
+      align-items: stretch;
+    }
+
+    /* Hide sidebar sections we don't want in tab bar */
+    .sidebar-group:last-child { display: none; }
+    .sidebar-group:first-child {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      gap: 0;
+    }
+    .sidebar-title { display: none; }
+    .sidebar-item {
+      flex: 1;
+      flex-direction: column;
+      gap: 3px;
+      padding: 8px 4px 6px;
+      border-radius: 0;
+      justify-content: center;
+      align-items: center;
+      font-size: 10px;
+    }
+    .sidebar-item .ico {
+      width: 22px; height: 22px;
+    }
+    .sidebar-item .badge { display: none; }
+    .sidebar-item.active {
+      background: transparent;
+      color: var(--accent);
+    }
+    .sidebar-item.active .ico path,
+    .sidebar-item.active .ico circle,
+    .sidebar-item.active .ico rect { fill: var(--accent); }
+    .sidebar-item.active .label { color: var(--accent); }
+    .sidebar-item .label {
+      color: var(--text-3);
+      font-size: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 58px;
+    }
+    .sidebar-item.active .label { font-weight: 600; }
+
+    /* Status bar hidden */
+    .status { display: none; }
+
+    /* Main scrolls, padded for tab bar */
+    .main {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* Content view padding */
+    .doc { padding: 24px 20px 32px; }
+    .doc-header {
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+    }
+    .doc-icon { width: 60px; height: 60px; border-radius: 14px; font-size: 28px; }
+    .doc-header .filename { font-size: 10px; }
+    .doc-header h1 { font-size: 26px; }
+    .doc-header .role { font-size: 13px; }
+    .info-card { grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+    .doc-actions { gap: 8px; }
+    .btn { font-size: 13px; padding: 8px 14px; }
+
+    .pane-header { padding: 20px 20px 14px; }
+    .pane-header h2 { font-size: 22px; }
+    .pane-header .view-toggle { display: none; }
+
+    .proj-grid {
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      padding: 16px 16px;
+      gap: 8px;
+    }
+    .proj-icon { width: 64px; height: 64px; border-radius: 14px; font-size: 22px; }
+    .proj-detail { margin: 0 16px 24px; }
+    .proj-detail-header { padding: 16px 18px; gap: 14px; }
+    .proj-detail-header .picon { width: 48px; height: 48px; font-size: 18px; }
+    .proj-detail-header h3 { font-size: 17px; }
+    .proj-detail-header .featured-pill { display: none; }
+    .proj-detail-body { padding: 16px 18px; }
+
+    .exp-list { padding: 16px 20px; }
+    .exp-item { grid-template-columns: 1fr; gap: 4px; padding: 16px 0; }
+    .exp-date { font-size: 11px; }
+    .exp-role { font-size: 15px; }
+
+    .skills-pane { padding: 16px 20px; }
+
+    .vcard { margin: 24px 16px; }
+    .vcard-body { padding: 0 20px 24px; }
+    .vcard h2 { font-size: 22px; }
+    .vcard-field { grid-template-columns: 70px 1fr; gap: 10px; }
   }
 </style>
 </head>
@@ -828,24 +958,24 @@
       <div class="sidebar-title">Favorites</div>
       <div class="sidebar-item active" data-view="about">
         <svg class="ico" viewBox="0 0 24 24" fill="#0a84ff"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6v1H4v-1z"/></svg>
-        <span class="label">About.md</span>
+        <span class="label" data-full="About.md" data-short="About">About.md</span>
       </div>
       <div class="sidebar-item" data-view="work">
         <svg class="ico" viewBox="0 0 24 24" fill="#ff9500"><path d="M3 7h7l2 2h9v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7z"/></svg>
-        <span class="label">Projects</span>
+        <span class="label" data-full="Projects" data-short="Work">Projects</span>
         <span class="badge">4</span>
       </div>
       <div class="sidebar-item" data-view="experience">
         <svg class="ico" viewBox="0 0 24 24" fill="#34c759"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" fill="none" stroke="#34c759" stroke-width="2"/></svg>
-        <span class="label">Experience.json</span>
+        <span class="label" data-full="Experience.json" data-short="Exp">Experience.json</span>
       </div>
       <div class="sidebar-item" data-view="skills">
         <svg class="ico" viewBox="0 0 24 24" fill="#bf5af2"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8 5.8 21.3l2.4-7.4L2 9.4h7.6L12 2z"/></svg>
-        <span class="label">Skills.app</span>
+        <span class="label" data-full="Skills.app" data-short="Skills">Skills.app</span>
       </div>
       <div class="sidebar-item" data-view="contact">
         <svg class="ico" viewBox="0 0 24 24" fill="#5e5ce6"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8l10 6 10-6" fill="none" stroke="white" stroke-width="2"/></svg>
-        <span class="label">Contact.vcf</span>
+        <span class="label" data-full="Contact.vcf" data-short="Contact">Contact.vcf</span>
       </div>
     </div>
     <div class="sidebar-group">
@@ -1145,6 +1275,18 @@
       const inner = a.textContent.trim();
       if (inner === '·' || inner === '') a.textContent = addr;
     });
+  })();
+
+  // ===== Mobile: swap sidebar labels to short form =====
+  (function () {
+    const mq = window.matchMedia('(max-width: 768px)');
+    function applyLabels(mobile) {
+      document.querySelectorAll('.sidebar-item .label[data-short]').forEach(el => {
+        el.textContent = mobile ? el.dataset.short : el.dataset.full;
+      });
+    }
+    applyLabels(mq.matches);
+    mq.addEventListener('change', e => applyLabels(e.matches));
   })();
 
   // ===== View routing =====
