@@ -736,47 +736,6 @@
   .vcard-field .v a { color: var(--accent); text-decoration: none; }
   .vcard-field .v a:hover { text-decoration: underline; }
 
-  /* Resume preview */
-  .pdf-preview {
-    padding: 40px;
-    text-align: center;
-  }
-  .pdf-paper {
-    width: 400px;
-    max-width: 100%;
-    aspect-ratio: 8.5 / 11;
-    background: white;
-    margin: 0 auto 24px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.18);
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    text-align: left;
-    padding: 32px 36px;
-    overflow: hidden;
-    position: relative;
-  }
-  .pdf-paper::after {
-    content: "";
-    position: absolute; left: 0; right: 0; bottom: 0;
-    height: 60%;
-    background: linear-gradient(to bottom, transparent, white);
-    pointer-events: none;
-  }
-  .pdf-paper h1 {
-    margin: 0 0 4px;
-    font-size: 22px;
-    font-weight: 700;
-  }
-  .pdf-paper .pdf-role { font-size: 11px; color: var(--text-2); margin-bottom: 14px; }
-  .pdf-paper .pdf-contact {
-    font-size: 9px; color: var(--text-3);
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 10px;
-    margin-bottom: 12px;
-  }
-  .pdf-paper h2 { font-size: 11px; margin: 12px 0 6px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
-  .pdf-paper .pdf-line { font-size: 9px; line-height: 1.4; color: var(--text-2); margin-bottom: 6px; }
-  .pdf-paper .pdf-line b { color: var(--text); font-weight: 600; }
 
   /* Mobile */
   @media (max-width: 900px) {
@@ -810,7 +769,6 @@
     .exp-list, .skills-pane { padding: 18px 20px; }
     .exp-item { grid-template-columns: 1fr; gap: 8px; }
     .pane-header { padding: 18px 20px 14px; }
-    .pdf-paper { transform: scale(0.85); }
 
   }
 </style>
@@ -888,13 +846,6 @@
       <div class="sidebar-item" data-view="contact">
         <svg class="ico" viewBox="0 0 24 24" fill="#5e5ce6"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8l10 6 10-6" fill="none" stroke="white" stroke-width="2"/></svg>
         <span class="label">Contact.vcf</span>
-      </div>
-    </div>
-    <div class="sidebar-group">
-      <div class="sidebar-title">Documents</div>
-      <div class="sidebar-item" data-view="resume">
-        <svg class="ico" viewBox="0 0 24 24" fill="#ff453a"><path d="M6 2h9l5 5v15H6V2z"/><path d="M15 2v5h5" fill="none" stroke="white" stroke-width="2"/></svg>
-        <span class="label">Resume.pdf</span>
       </div>
     </div>
     <div class="sidebar-group">
@@ -1172,30 +1123,6 @@
       </div>
     </section>
 
-    <!-- RESUME -->
-    <section class="view" id="view-resume" data-screen-label="06 Resume">
-      <div class="pdf-preview">
-        <div class="pdf-paper">
-          <h1>JP Jacobello</h1>
-          <div class="pdf-role">Technology Sr. Analyst · Accenture</div>
-          <div class="pdf-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ddb7adb7bcbeb2bfb8b1b1b29dbab0bcb4b1f3beb2b0">[email&#160;protected]</a> · 908.472.9055 · New York, NY</div>
-          <h2>Experience</h2>
-          <div class="pdf-line"><b>Technology Sr. Analyst</b>, Accenture · Dec 2024 to Present</div>
-          <div class="pdf-line">Built AI analytics applications used by 1,200+ users; presented to 60+ senior leaders.</div>
-          <div class="pdf-line"><b>Technology Analyst</b>, Accenture · Sep 2022 to Dec 2024</div>
-          <div class="pdf-line">WOW Award (top 1%); led Projects &amp; Budgets workstreams; solutioned 300+ defects.</div>
-          <h2>Education</h2>
-          <div class="pdf-line"><b>University of Virginia</b> · B.A. Statistics (Econometrics) · 2019–2022</div>
-          <h2>Selected Projects</h2>
-          <div class="pdf-line">Accenture Accounting Assistant · 990 Analyzer · Configuration Load Tool · Divi</div>
-        </div>
-        <p style="font-size:13px;color:var(--text-2);margin-bottom:18px;">Quick Look preview · 1 page · 124 KB · PDF</p>
-        <a href="JP Jacobello Resume.pdf" download class="btn btn-primary">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Download PDF
-        </a>
-      </div>
-    </section>
 
   </main>
 
@@ -1230,16 +1157,14 @@
     work: 'Projects',
     experience: 'Experience.json',
     skills: 'Skills.app',
-    contact: 'Contact.vcf',
-    resume: 'Resume.pdf'
+    contact: 'Contact.vcf'
   };
   const statusText = {
     about: '1 item · About.md · 4 KB',
     work: '4 items · Projects/ · 18 MB',
     experience: '1 item · Experience.json · 8 KB',
     skills: '1 item · Skills.app · 12 MB',
-    contact: '1 item · Contact.vcf · 2 KB',
-    resume: '1 item · Resume.pdf · 124 KB'
+    contact: '1 item · Contact.vcf · 2 KB'
   };
   function showView(name) {
     sidebarItems.forEach(i => i.classList.toggle('active', i.dataset.view === name));
